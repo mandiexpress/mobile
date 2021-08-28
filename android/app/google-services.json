@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "47802233773",
+    "project_id": "mandi-23505",
+    "storage_bucket": "mandi-23505.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:47802233773:android:83ce525ac7653fa4dea724",
+        "android_client_info": {
+          "package_name": "com.mandi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "47802233773-uuu8i53av7k8ap1tv5efks0sbu9uc4pq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pk.com.mandi",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "47802233773-igje6t0aguvge2pqoi7srp418sqiqthn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGnbg-NLUfNX-iyUspXmTwGckBwnRaNmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "47802233773-igje6t0aguvge2pqoi7srp418sqiqthn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "47802233773-eim7fufumqjsh1rih695n2df251p410f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.Mandi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
