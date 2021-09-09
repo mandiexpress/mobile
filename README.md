@@ -61,7 +61,7 @@ Mandii Express © 2021
 
 ## Contact
 
-Developer: [Arslan Mushtaq](https://mrarslanark.github.io/)
-Organization: [Dev Den](https://devden.org/)
-Email: contact@devden.org
+Developer: [Arslan Mushtaq](https://mrarslanark.github.io/)\
+Organization: [Dev Den](https://devden.org/)\
+Email: contact@devden.org\
 Contact +92 309 411 2868
