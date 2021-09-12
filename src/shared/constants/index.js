@@ -1,5 +1,37 @@
+import { Dimensions } from 'react-native';
+
 const iconPath = '../../../assets';
 const extension = '.png';
+
+export const globalStyles = {
+  singleFlex: 1,
+  fullHeight: '100%',
+  fullWidth: '100%',
+  screenWidth: Dimensions.get('window').width,
+  divider: {
+    small: 6,
+    large: 12,
+  },
+  margins: {
+    mv_small: 12,
+  },
+  fontSizes: {
+    small: 12,
+    medium: 14,
+    large: 18,
+    xlarge: 24,
+    xxlarge: 32,
+  },
+  dateTimeFormat: 'ddd, DD YYYY hh:mm A',
+};
+
+export const collections = {
+  PROMOTIONS: 'Promotions',
+  CATEGORIES: 'Categories',
+  ORDERS: 'Orders',
+  PRODUCTS: 'Products',
+  USERS: 'Users',
+};
 
 export const routes = {
   CART_SCREEN: 'Cart',

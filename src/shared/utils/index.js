@@ -1,4 +1,4 @@
-import {icons, status} from '../constants';
+import { icons, status } from '../constants';
 
 export function getOrderStatusGraphic(orderStatus) {
   switch (orderStatus) {
@@ -55,4 +55,12 @@ export function getOrderStatusColor(orderStatus) {
     case status.WEATHER_ISSUES:
       return 'orange';
   }
+}
+
+export function calculateDiscount(discount = 0.0, price = 0.0) {
+  return price - price * (discount / 100);
+}
+
+export function calculateSavePrice(discount = 0.0, price = 0.0) {
+  return price - calculateDiscount(discount, price);
 }

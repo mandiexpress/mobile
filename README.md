@@ -32,7 +32,7 @@ cd mobile
 - Installing dependencies
 
 ```bash
-yarn install
+npm install
 ```
 
 - Installing **iOS** dependencies

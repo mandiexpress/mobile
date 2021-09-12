@@ -1,10 +1,9 @@
-import {StyleSheet} from 'react-native';
-import {colors} from '../../shared/constants';
+import { StyleSheet } from 'react-native';
+import { colors } from '../../shared/constants';
 
 export default StyleSheet.create({
   container: {
     flexDirection: 'row',
-    paddingHorizontal: '5%',
     marginVertical: '1%',
     paddingVertical: '1%',
   },

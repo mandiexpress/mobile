@@ -2,4 +2,7 @@
     <string name="app_name">Mandi</string>
     <string name="facebook_app_id">990822228157559</string>
     <string name="fb_login_protocol_scheme">fb990822228157559</string>
+    <string name="welcome_en">Welcome to Mandii Mart</string>
+    <string name="welcome_ur">خوش آمدید</string>
+    <string name="welcome_image">Welcome Image</string>
 </resources>

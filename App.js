@@ -1,19 +1,22 @@
-/* eslint-disable react-native/no-inline-styles */
-import {NavigationContainer} from '@react-navigation/native';
-import React from 'react';
-import {SafeAreaView} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import 'react-native-gesture-handler';
-import {Provider} from 'react-redux';
-import MainBottomNavigator from './src/routes/MainBottomNavigator';
+import SplashScreen from 'react-native-splash-screen';
+import { Provider } from 'react-redux';
+
 import MainNavigator from './src/routes/MainNavigator';
-import {store} from './src/store';
+import { globalStyles } from './src/shared/constants';
+import { store } from './src/store';
 
-// import MainNavigator from './src/routes/MainNavigator';
+export default function App() {
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
 
-function App() {
   return (
     <Provider store={store}>
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={styles.safeAreaView}>
         <NavigationContainer>
           <MainNavigator />
         </NavigationContainer>
@@ -22,4 +25,8 @@ function App() {
   );
 }
 
-export default App;
+const styles = StyleSheet.create({
+  safeAreaView: {
+    flex: globalStyles.singleFlex,
+  },
+});
