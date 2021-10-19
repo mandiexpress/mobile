@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-import {colors} from '../../shared/constants';
+import { StyleSheet } from 'react-native';
+import { colors } from '../../shared/constants';
 
 export default StyleSheet.create({
   container: {
@@ -111,6 +111,7 @@ export default StyleSheet.create({
   },
   listItemPrice: {
     fontSize: 12,
+    marginTop: 6,
   },
   listItemSubtotal: {
     fontSize: 12,

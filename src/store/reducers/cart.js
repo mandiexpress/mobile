@@ -1,4 +1,5 @@
-import {createSlice} from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+import { calculateDiscount } from '../../shared/utils';
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -15,11 +16,16 @@ const cartSlice = createSlice({
       state.items = updatedCart;
     },
     updateQuantity: (state, action) => {
-      const {id, quantity} = action.payload;
+      const { id, quantity } = action.payload;
       state.items.map(item => {
         if (item.id === id) {
           item.quantity = quantity;
-          item.subtotal = item.price * quantity;
+          if (item.discount > 0) {
+            item.subtotal =
+              calculateDiscount(item.discount, item.price) * quantity;
+          } else {
+            item.subtotal = item.price * quantity;
+          }
         }
       });
     },
@@ -29,6 +35,6 @@ const cartSlice = createSlice({
   },
 });
 
-export const {addToCart, removeFromCart, updateQuantity, emptyCart} =
+export const { addToCart, removeFromCart, updateQuantity, emptyCart } =
   cartSlice.actions;
 export default cartSlice.reducer;

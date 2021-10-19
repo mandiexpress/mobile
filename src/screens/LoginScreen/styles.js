@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-import {colors} from '../../shared/constants';
+import { StyleSheet } from 'react-native';
+import { colors } from '../../shared/constants';
 
 export default StyleSheet.create({
   container: {
@@ -8,34 +8,31 @@ export default StyleSheet.create({
   },
   inputContainer: {
     flex: 1,
-    alignContent: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: '5%',
   },
   button: {
     paddingVertical: 16,
-    backgroundColor: colors.DARK_BLUE,
+    backgroundColor: colors.LIGHT_BLUE,
     width: '100%',
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: 4,
+    borderColor: colors.DARK_BLUE,
+    borderWidth: 0.5,
   },
   loginButton: {
     fontSize: 14,
     textTransform: 'uppercase',
     fontWeight: 'bold',
-    color: 'white',
+    letterSpacing: 1,
+    color: colors.DARK_BLUE,
   },
   errorText: {
     color: 'darkred',
-    marginTop: 2,
     fontSize: 12,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
+    marginTop: 6,
+    marginBottom: 8,
     textAlign: 'right',
-    marginBottom: 6,
-    alignSelf: 'flex-end',
   },
   forgetButton: {
     color: 'gray',

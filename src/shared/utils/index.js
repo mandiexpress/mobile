@@ -1,4 +1,5 @@
 import { icons, status } from '../constants';
+import towns from '../data/towns';
 
 export function getOrderStatusGraphic(orderStatus) {
   switch (orderStatus) {
@@ -57,10 +58,76 @@ export function getOrderStatusColor(orderStatus) {
   }
 }
 
-export function calculateDiscount(discount = 0.0, price = 0.0) {
-  return price - price * (discount / 100);
+export function calculateDiscount(discount = 0, price = 0) {
+  const discountPrice = price - price * (discount / 100);
+  return Math.round(discountPrice);
 }
 
-export function calculateSavePrice(discount = 0.0, price = 0.0) {
-  return price - calculateDiscount(discount, price);
+export function calculateSavePrice(discount = 0, price = 0) {
+  const saving = price - calculateDiscount(discount, price);
+  return Math.round(saving);
+}
+
+export function getQuantity(cart, id) {
+  const cartItem = cart.filter(item => item.id === id);
+  if (cartItem.length <= 0) {
+    return;
+  }
+  return cartItem[0].quantity;
+}
+
+export function getInitials(name) {
+  let initials = name.split(' ');
+
+  if (initials.length > 1) {
+    initials = initials.shift().charAt(0) + initials.pop().charAt(0);
+  } else {
+    initials = name.substring(0, 2);
+  }
+
+  return initials.toUpperCase();
+}
+
+export function getSectors(area = '') {
+  const areaObj = towns.find(item => item.value === area);
+  if (areaObj) {
+    return areaObj.sectors;
+  } else {
+    return [];
+  }
+}
+
+export function getBlocks(area = '', sector = '') {
+  const areaObj = towns.find(item => item.value === area);
+  if (!areaObj) {
+    return [];
+  }
+  const sectorObj = areaObj.sectors.find(item => item.value === sector);
+  if (sectorObj) {
+    return sectorObj.blocks;
+  } else {
+    return [];
+  }
+}
+
+export function capitalize(text, splitter) {
+  if (text === 'dha') {
+    return text.toUpperCase();
+  }
+  const arr = text.split(splitter);
+
+  for (let i = 0; i < arr.length; i++) {
+    arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
+  }
+
+  const result = arr.join(' ');
+  return result;
+}
+
+export function formatPhone(phoneNumber) {
+  if (phoneNumber.startsWith('0')) {
+    return `+92${phoneNumber.trim().slice(1, phoneNumber.length)}`;
+  } else {
+    return `+92${phoneNumber}`;
+  }
 }

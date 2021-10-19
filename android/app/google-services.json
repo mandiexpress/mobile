@@ -7,18 +7,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:47802233773:android:83ce525ac7653fa4dea724",
+        "mobilesdk_app_id": "1:47802233773:android:fd32b272256af79adea724",
         "android_client_info": {
           "package_name": "com.mandi"
         }
       },
       "oauth_client": [
         {
-          "client_id": "47802233773-uuu8i53av7k8ap1tv5efks0sbu9uc4pq.apps.googleusercontent.com",
+          "client_id": "47802233773-tg7am4dlndjmoc6obvsk68ihobm371d6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "pk.com.mandi",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+            "package_name": "com.mandi",
+            "certificate_hash": "59c616e91f6cf4f088f1a6190b31c2470249f619"
           }
         },
         {

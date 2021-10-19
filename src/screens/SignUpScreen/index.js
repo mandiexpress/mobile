@@ -1,13 +1,34 @@
-import {Formik} from 'formik';
-import React, {useState} from 'react';
-import {Alert, Image, Pressable, ScrollView, Text, View} from 'react-native';
-import {TextInput} from 'react-native-paper';
-import validation from './validations';
-import {colors, icons} from '../../shared/constants';
+import { Formik } from 'formik';
+import React, { useEffect, useState } from 'react';
+import {
+  Alert,
+  Image,
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { useDispatch } from 'react-redux';
+import Header from '../../components/Header';
 import Loader from '../../components/Loader';
-import {registerUser} from '../../store/reducers/user';
+import { collections, icons, routes } from '../../shared/constants';
+import towns from '../../shared/data/towns';
+import User from '../../shared/models/User';
+import {
+  capitalize,
+  formatPhone,
+  getBlocks,
+  getSectors,
+} from '../../shared/utils';
 import styles from './styles';
-import {useDispatch} from 'react-redux';
+import validation from './validations';
+import firestore from '@react-native-firebase/firestore';
+
 // import {LoginManager, AccessToken} from 'react-native-fbsdk';
 
 // GoogleSignin.configure({
@@ -28,36 +49,94 @@ import {useDispatch} from 'react-redux';
 
 const initialValues = {
   name: '',
-  email: '',
   phone: '',
-  address: '',
-  password: '',
-  confirmPassword: '',
+  houseNumber: '',
 };
 
-const inputTheme = {
-  mode: 'exact',
-  colors: {
-    placeholder: 'gray',
-    background: 'transparent',
-    text: 'black',
-    primary: colors.DARK_BLUE,
-    error: 'darkred',
-  },
-  roundness: 6,
-};
+export default function SignUpScreen({ navigation }) {
+  // const dispatch = useDispatch();
 
-function SignUpScreen({navigation}) {
-  const dispatch = useDispatch();
-  const [passwordSecure, setPasswordSecure] = useState(true);
-  const [confirmPasswordSecure, setConfirmPasswordSecure] = useState(true);
+  const [areasOpen, setAreasOpen] = useState(false);
+  const [area, setArea] = useState(null);
+  const [areas, setAreas] = useState(towns);
+
+  const [sectorsOpen, setSectorsOpen] = useState(false);
+  const [sector, setSector] = useState(null);
+  const [sectors, setSectors] = useState(getSectors(area));
+
+  const [blocksOpen, setBlocksOpen] = useState(false);
+  const [block, setBlock] = useState(null);
+  const [blocks, setBlocks] = useState(getBlocks(area, sector));
+
   const [loading, setLoading] = useState(false);
 
-  async function onSignUp(values, actions) {
+  useEffect(() => {
+    setSectors(getSectors(area));
+  }, [area]);
+
+  useEffect(() => {
+    setBlocks(getBlocks(area, sector));
+  }, [area, sector]);
+
+  async function validateUser(phone) {
     try {
+      const { size } = await firestore()
+        .collection(collections.USERS)
+        .where('contact.local', '==', phone)
+        .get();
+      return size > 0;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function onSignUp({ name, phone, houseNumber }, actions) {
+    try {
+      if (!area) {
+        Alert.alert('Select an Area');
+        return;
+      }
+
+      if (!sector) {
+        Alert.alert('Select a Sector');
+        return;
+      }
+
+      if (!block) {
+        Alert.alert('Select a Block');
+        return;
+      }
+
       setLoading(true);
-      await dispatch(registerUser(values)).unwrap();
-      navigation.pop();
+      const isUserAvailable = await validateUser(phone);
+      if (isUserAvailable) {
+        actions.setFieldError('phone', 'Already a member, kindly login');
+        return;
+      }
+
+      const address = `${houseNumber}, ${capitalize(block, '-')}, ${capitalize(
+        sector,
+        '_',
+      )}, ${capitalize(area, ' ')}, Punjab, Pakistan`;
+
+      const model = {
+        name,
+        contact: {
+          local: phone,
+          international: formatPhone(phone),
+          country: 'PK',
+          code: '+92',
+        },
+        address: {
+          area,
+          sector,
+          block,
+          house: houseNumber,
+          complete: address,
+        },
+      };
+      const user = new User(model);
+      navigation.navigate(routes.REGISTER_VERIFY_SCREEN, { user });
     } catch (err) {
       console.log(err);
       switch (err.code) {
@@ -77,213 +156,208 @@ function SignUpScreen({navigation}) {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onSignUp}
-        validationSchema={validation}>
-        {({
-          handleChange,
-          handleBlur,
-          values,
-          touched,
-          errors,
-          handleSubmit,
-        }) => (
-          <>
-            <View style={styles.inputContainer}>
-              <View style={{flexDirection: 'row'}}>
-                <Pressable onPress={() => navigation.pop()}>
-                  <Image
-                    source={icons.BACK}
-                    style={{
-                      width: 24,
-                      height: 24,
-                      resizeMode: 'contain',
-                      marginTop: 8,
-                    }}
-                  />
-                </Pressable>
-                <View style={{marginStart: 12}}>
-                  <Text
-                    style={{
-                      fontWeight: 'bold',
-                      fontSize: 32,
-                    }}>
-                    Registration
-                  </Text>
-                  <Text style={{fontSize: 12}}>
-                    Become a Mandi user and enjoy more...
-                  </Text>
-                </View>
-              </View>
-              <View>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      style={styles.scrollViewStyle}>
+      <Header
+        navigation={navigation}
+        title={'Register'}
+        placement={'center'}
+        backNavStyle={styles.headerBackNavStyle}
+      />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={onSignUp}
+          validationSchema={validation}>
+          {({
+            handleChange,
+            handleBlur,
+            values,
+            touched,
+            errors,
+            handleSubmit,
+          }) => (
+            <ImageBackground
+              source={icons.REGISTER_BG}
+              style={styles.backgroundStyle}>
+              <View style={styles.inputContainer}>
                 {/* Name */}
-                <TextInput
-                  onChangeText={handleChange('name')}
-                  onBlur={handleBlur('name')}
-                  value={values.name}
-                  placeholder={'John Doe'}
-                  mode={'outlined'}
-                  spellCheck={false}
-                  autoCorrect={false}
-                  theme={inputTheme}
-                  maxLength={40}
-                  error={touched.name && errors.name}
-                />
+                <View style={styles.inputContentContainer}>
+                  <Image source={icons.PERSON} style={styles.inputIconStyle} />
+                  <TextInput
+                    onChangeText={handleChange('name')}
+                    onBlur={handleBlur('name')}
+                    value={values.name}
+                    placeholder={'Full Name'}
+                    placeholderTextColor={'gray'}
+                    style={styles.inputStyle}
+                    spellCheck={false}
+                    autoCorrect={false}
+                    maxLength={40}
+                  />
+                </View>
                 <Text style={styles.errorText}>
                   {touched.name && errors.name ? errors.name : ''}
                 </Text>
 
-                {/* Email Address */}
-                <TextInput
-                  maxLength={40}
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  value={values.email}
-                  placeholder={'johndoe@email.com'}
-                  autoCapitalize={'none'}
-                  textContentType={'emailAddress'}
-                  mode={'outlined'}
-                  spellCheck={false}
-                  autoCorrect={false}
-                  theme={inputTheme}
-                  error={touched.email && errors.email}
-                />
-                <Text style={styles.errorText}>
-                  {touched.email && errors.email ? errors.email : ''}
-                </Text>
-
                 {/* Phone Number */}
-                <TextInput
-                  maxLength={11}
-                  onChangeText={handleChange('phone')}
-                  onBlur={handleBlur('phone')}
-                  value={values.phone}
-                  placeholder={'03XX XXX XX XX'}
-                  mode={'outlined'}
-                  keyboardType={'number-pad'}
-                  autoCorrect={false}
-                  theme={inputTheme}
-                  error={touched.phone && errors.phone}
-                />
+                <View style={styles.inputContentContainer}>
+                  <Image source={icons.PHONE} style={styles.inputIconStyle} />
+                  <TextInput
+                    onChangeText={handleChange('phone')}
+                    onBlur={handleBlur('phone')}
+                    value={values.phone}
+                    placeholder={'03XX XXX XX XX'}
+                    placeholderTextColor={'gray'}
+                    style={styles.inputStyle}
+                    spellCheck={false}
+                    autoCorrect={false}
+                    maxLength={40}
+                    keyboardType={'number-pad'}
+                  />
+                </View>
                 <Text style={styles.errorText}>
                   {touched.phone && errors.phone ? errors.phone : ''}
                 </Text>
 
-                {/* Address */}
-                <TextInput
-                  maxLength={1024}
-                  onChangeText={handleChange('address')}
-                  onBlur={handleBlur('address')}
-                  value={values.address}
-                  placeholder={'Address'}
-                  mode={'outlined'}
-                  keyboardType={'default'}
-                  autoCorrect={false}
-                  theme={inputTheme}
-                  error={touched.address && errors.address}
-                />
-                <Text style={styles.errorText}>
-                  {touched.address && errors.address ? errors.address : ''}
-                </Text>
+                <Text style={styles.headerText}>Delivery Address</Text>
 
-                {/* Password */}
-                <TextInput
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  value={values.password}
-                  placeholder={'Password'}
-                  mode={'outlined'}
-                  keyboardType={'default'}
-                  autoCorrect={false}
-                  theme={inputTheme}
-                  secureTextEntry={passwordSecure}
-                  error={touched.password && errors.password}
-                  right={
-                    <TextInput.Icon
-                      name={
-                        passwordSecure
-                          ? icons.SHOW_PASSWORD
-                          : icons.HIDE_PASSWORD
-                      }
-                      color={'gray'}
-                      onPress={() => {
-                        setPasswordSecure(prevState => !prevState);
-                      }}
-                    />
+                {/* Area Selection */}
+                <DropDownPicker
+                  open={areasOpen}
+                  value={area}
+                  items={areas}
+                  setOpen={setAreasOpen}
+                  setValue={setArea}
+                  setItems={setAreas}
+                  placeholder={'Select Area'}
+                  zIndex={3}
+                  textStyle={styles.dropdownEnabledTextStyle}
+                  listItemLabelStyle={styles.dropdownListItemLabelStyle}
+                  listMode={'MODAL'}
+                  style={styles.dropdownStyle}
+                  searchContainerStyle={styles.dropdownSearchContainerStyle}
+                  modalContentContainerStyle={
+                    styles.dropdownModalContentContainerStyle
                   }
+                  searchable={true}
+                  searchPlaceholder={'Search Areas...'}
+                  searchTextInputStyle={styles.dropdownSearchTextInputStyle}
+                  listItemContainerStyle={styles.dropdownListItemContainerStyle}
                 />
-                <Text style={styles.errorText}>
-                  {touched.password && errors.password ? errors.password : ''}
-                </Text>
 
-                {/* Confirm Password */}
-                <TextInput
-                  onChangeText={handleChange('confirmPassword')}
-                  onBlur={handleBlur('confirmPassword')}
-                  value={values.confirmPassword}
-                  placeholder={'Confirm Password'}
-                  mode={'outlined'}
-                  keyboardType={'default'}
-                  autoCorrect={false}
-                  theme={inputTheme}
-                  secureTextEntry={confirmPasswordSecure}
-                  error={touched.confirmPassword && errors.confirmPassword}
-                  right={
-                    <TextInput.Icon
-                      name={
-                        confirmPasswordSecure
-                          ? icons.SHOW_PASSWORD
-                          : icons.HIDE_PASSWORD
-                      }
-                      color={'gray'}
-                      onPress={() => {
-                        setConfirmPasswordSecure(prevState => !prevState);
-                      }}
-                    />
+                <View style={styles.divider} />
+
+                {/* Sector Selection */}
+                <DropDownPicker
+                  open={sectorsOpen}
+                  value={sector}
+                  items={sectors}
+                  disabled={sectors && sectors.length === 0}
+                  setOpen={setSectorsOpen}
+                  setValue={setSector}
+                  setItems={setSectors}
+                  disabledItemLabelStyle={styles.disabledItemLabelStyle}
+                  placeholder={'Select Sector'}
+                  zIndex={2}
+                  textStyle={
+                    sectors && sectors.length === 0
+                      ? styles.dropdownDisabledTextStyle
+                      : styles.dropdownEnabledTextStyle
                   }
+                  listItemLabelStyle={styles.dropdownListItemLabelStyle}
+                  listMode={'MODAL'}
+                  style={styles.dropdownStyle}
+                  searchContainerStyle={styles.dropdownSearchContainerStyle}
+                  modalContentContainerStyle={
+                    styles.dropdownModalContentContainerStyle
+                  }
+                  searchable={true}
+                  searchPlaceholder={'Search Areas...'}
+                  searchTextInputStyle={styles.dropdownSearchTextInputStyle}
+                  listItemContainerStyle={styles.dropdownListItemContainerStyle}
                 />
+
+                <View style={styles.bottomDivider} />
+
+                {/* Block Selection */}
+                <DropDownPicker
+                  open={blocksOpen}
+                  value={block}
+                  items={blocks}
+                  disabled={blocks && blocks.length === 0}
+                  setOpen={setBlocksOpen}
+                  setValue={setBlock}
+                  setItems={setBlocks}
+                  placeholder={'Select Block'}
+                  zIndex={1}
+                  textStyle={
+                    blocks && blocks.length === 0
+                      ? styles.dropdownDisabledTextStyle
+                      : styles.dropdownEnabledTextStyle
+                  }
+                  listItemLabelStyle={styles.dropdownListItemLabelStyle}
+                  listMode={'MODAL'}
+                  style={styles.dropdownStyle}
+                  searchContainerStyle={styles.dropdownSearchContainerStyle}
+                  modalContentContainerStyle={
+                    styles.dropdownModalContentContainerStyle
+                  }
+                  searchable={true}
+                  searchPlaceholder={'Search Areas...'}
+                  searchTextInputStyle={styles.dropdownSearchTextInputStyle}
+                  listItemContainerStyle={styles.dropdownListItemContainerStyle}
+                />
+
+                <View style={styles.maxBottomDivider} />
+
+                <View style={styles.inputContentContainer}>
+                  <Image
+                    source={icons.HOME_NUMBER}
+                    style={styles.inputIconStyle}
+                  />
+                  <TextInput
+                    disabled={true}
+                    onChangeText={handleChange('houseNumber')}
+                    onBlur={handleBlur('houseNumber')}
+                    value={values.houseNumber}
+                    placeholder={'House Number'}
+                    placeholderTextColor={'gray'}
+                    style={styles.inputStyle}
+                    spellCheck={false}
+                    autoCorrect={false}
+                    maxLength={40}
+                    keyboardType={'default'}
+                  />
+                </View>
                 <Text style={styles.errorText}>
-                  {touched.confirmPassword && errors.confirmPassword
-                    ? errors.confirmPassword
+                  {touched.houseNumber && errors.houseNumber
+                    ? errors.houseNumber
                     : ''}
                 </Text>
 
                 <Pressable style={styles.button} onPress={handleSubmit}>
                   <Text style={styles.registerButton}>Register</Text>
                 </Pressable>
-              </View>
-              <Pressable
-                style={styles.alreadyTextContainer}
-                onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.alreadyButtonText}>
-                  Already have an account?{' '}
-                  <Text style={styles.loginText}>Login</Text>
-                </Text>
-              </Pressable>
-              {/* <View style={styles.iconContainer}>
                 <Pressable
-                  onPress={() =>
-                    onGoogleButtonPress().then(() =>
-                      console.log('Signed in with Google!'),
-                    )
-                  }>
-                  <Image style={styles.signUpIcon} source={icons.GOOGLE} />
+                  style={styles.alreadyTextContainer}
+                  onPress={() => navigation.navigate('Login')}>
+                  <Text style={styles.alreadyButtonText}>
+                    Already have an account?{' '}
+                    <Text style={styles.loginText}>Login</Text>
+                  </Text>
                 </Pressable>
-                <Pressable>
-                  <Image style={styles.signUpIcon} source={icons.FACEBOOK} />
-                </Pressable>
-              </View> */}
-            </View>
-          </>
-        )}
-      </Formik>
+              </View>
+            </ImageBackground>
+          )}
+        </Formik>
+      </KeyboardAvoidingView>
       {loading && (
         <Loader visible={loading} text={'Registering your account...'} />
       )}
     </ScrollView>
   );
 }
-
-export default SignUpScreen;

@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {Alert, FlatList, Image, Pressable, Text, View} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {colors, icons, routes} from '../../shared/constants';
+import React, { useState } from 'react';
+import { Alert, FlatList, Image, Pressable, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { colors, icons, routes } from '../../shared/constants';
 import {
   emptyCart,
   removeFromCart,
@@ -9,9 +9,9 @@ import {
 } from '../../store/reducers/cart';
 import styles from './styles';
 
-function CartScreen({navigation}) {
+function CartScreen({ navigation }) {
   const dispatch = useDispatch();
-  const {items} = useSelector(state => state.root.cart);
+  const { items } = useSelector(state => state.root.cart);
 
   const subtotal = function () {
     let total = 0;
@@ -33,7 +33,7 @@ function CartScreen({navigation}) {
       text: 'Cancel',
       style: 'cancel',
     };
-    Alert.alert(alertTitle, description, [yes, cancel], {cancelable: true});
+    Alert.alert(alertTitle, description, [yes, cancel], { cancelable: true });
   }
 
   function onNavigateToCheckout() {
@@ -69,7 +69,7 @@ function CartScreen({navigation}) {
           }
           ListEmptyComponent={EmptyListContent}
           ItemSeparatorComponent={ListContentDivider}
-          renderItem={({item}) => {
+          renderItem={({ item }) => {
             return <CartItem item={item} />;
           }}
         />
@@ -86,7 +86,7 @@ function CartScreen({navigation}) {
                     : styles.footerContainer.backgroundColor,
               },
             ]}>
-            <Text style={{fontSize: 12}}>
+            <Text style={{ fontSize: 12 }}>
               {subtotal() > 500
                 ? 'Yay! you get free delivery'
                 : 'Order more than 500 gets free delivery'}
@@ -128,14 +128,14 @@ function ListContentDivider() {
   return <View style={styles.listDivider} />;
 }
 
-function CartItem({item}) {
+function CartItem({ item }) {
   const dispatch = useDispatch();
-  const {title, image, unit, price, stock, quantity, subtotal} = item;
+  const { title, image, unit, price, stock, quantity, subtotal } = item;
   const [count, setCount] = useState(quantity);
 
   function onQuantityIncrease() {
     setCount(prevState => prevState + 1);
-    dispatch(updateQuantity({id: item.id, quantity: count + 1}));
+    dispatch(updateQuantity({ id: item.id, quantity: count + 1 }));
   }
 
   function onQuantityDecrease() {
@@ -143,7 +143,7 @@ function CartItem({item}) {
       dispatch(removeFromCart(item.id));
     }
     setCount(prevState => prevState - 1);
-    dispatch(updateQuantity({id: item.id, quantity: count - 1}));
+    dispatch(updateQuantity({ id: item.id, quantity: count - 1 }));
   }
 
   function onRemoveItem() {
@@ -158,12 +158,12 @@ function CartItem({item}) {
       text: 'Cancel',
       style: 'cancel',
     };
-    Alert.alert(alertTitle, description, [yes, cancel], {cancelable: true});
+    Alert.alert(alertTitle, description, [yes, cancel], { cancelable: true });
   }
 
   return (
     <Pressable style={styles.listItemContainer} onLongPress={onRemoveItem}>
-      <Image source={{uri: image}} style={styles.listItemImage} />
+      <Image source={{ uri: image }} style={styles.listItemImage} />
       <View style={styles.listItemContentContainer}>
         <View style={styles.row}>
           <View style={styles.singleFlex}>
@@ -180,7 +180,7 @@ function CartItem({item}) {
           </Pressable>
 
           <View style={styles.countStyle}>
-            <Text style={styles.countTextStyle}>{count}</Text>
+            <Text style={styles.countTextStyle}>{quantity}</Text>
           </View>
 
           <Pressable disabled={count === stock} onPress={onQuantityIncrease}>

@@ -62,5 +62,15 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Helvetica.ttf</string>
+		<string>HelveticaBlack.otf</string>
+		<string>HelveticaBold.ttf</string>
+		<string>HelveticaBoldOblique.ttf</string>
+		<string>HelveticaLight.ttf</string>
+		<string>HelveticaOblique.ttf</string>
+		<string>HelveticaRoundedBold.otf</string>
+	</array>
 </dict>
 </plist>

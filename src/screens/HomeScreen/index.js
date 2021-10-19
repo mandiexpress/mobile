@@ -1,56 +1,46 @@
-import auth from '@react-native-firebase/auth';
-import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import {
-  FlatList,
+  Image,
   Pressable,
   RefreshControl,
   ScrollView,
   Text,
   View,
 } from 'react-native';
-import { Image } from 'react-native-elements';
-import { useDispatch, useSelector } from 'react-redux';
-import HorizontalDivider from '../../components/HorizontalDivider';
-import { globalStyles, icons } from '../../shared/constants';
-import { calculateDiscount, calculateSavePrice } from '../../shared/utils';
-import { addToCart, removeFromCart } from '../../store/reducers/cart';
+import { Avatar } from 'react-native-elements';
+import { useSelector } from 'react-redux';
+import CategoryList from '../../components/CategoryList';
+import DiscountItemList from '../../components/DiscountItemList';
+import ItemDetailView from '../../components/ItemDetailView';
+import NewArrivalList from '../../components/NewArrivalList';
+import PromotionList from '../../components/PromotionList';
 import {
   fetchCategories,
   fetchDiscountItems,
   fetchLatestProducts,
   fetchPromotions,
-} from './api';
-import {
-  categoryListItemStyle,
-  promotionsListItemStyle,
-  screen,
-  sectionHeaderStyles,
-  productListStyle,
-} from './styles';
+} from '../../shared/api';
+import { icons, routes } from '../../shared/constants';
+import { getInitials } from '../../shared/utils';
+import { screen } from './styles';
 
 export default function HomeScreen({ navigation }) {
-  const [productList, setProductList] = useState([]);
-  const [promotions, setPromotions] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [discountItems, setDiscountItems] = useState([]);
+  const [promotions, setPromotions] = useState(null);
+  const [categories, setCategories] = useState(null);
+  const [productList, setProductList] = useState(null);
+  const [discountItems, setDiscountItems] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [detailModal, setDetailModal] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
 
   const { items } = useSelector(state => state.root.cart);
+  const { user } = useSelector(state => state.root.user);
 
-  function onLogout() {
-    auth()
-      .signOut()
-      .then(() => console.log('User signed out!'));
-  }
-
-  async function getLatestProducts() {
-    try {
-      const result = await fetchLatestProducts();
-      console.log(result);
-      setProductList(result);
-    } catch (err) {
-      console.error(err);
+  function onProfilePress() {
+    if (user) {
+      navigation.navigate(routes.PROFILE_SCREEN);
+    } else {
+      navigation.navigate(routes.LOGIN_SCREEN);
     }
   }
 
@@ -58,6 +48,15 @@ export default function HomeScreen({ navigation }) {
     try {
       const result = await fetchPromotions();
       setPromotions(result);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function getLatestProducts() {
+    try {
+      const result = await fetchLatestProducts();
+      setProductList(result);
     } catch (err) {
       console.error(err);
     }
@@ -109,210 +108,95 @@ export default function HomeScreen({ navigation }) {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
       {/* App Name */}
-      <Text style={screen.appName}>Mandii Express</Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          flex: 1,
+        }}>
+        <Text style={screen.appName}>Mandii Express</Text>
+
+        {user ? (
+          <ProfileImage
+            image={user.image}
+            title={getInitials(user.name)}
+            onPress={onProfilePress}
+          />
+        ) : (
+          <Pressable
+            onPress={onProfilePress}
+            style={{
+              justifyContent: 'center',
+              alignContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Image
+              source={icons.PROFILE}
+              style={{
+                width: 24,
+                height: 24,
+              }}
+            />
+          </Pressable>
+        )}
+      </View>
 
       {/* Promotions */}
-      <View style={screen.sectionContainer}>
-        {/* <Text style={screen.title}>PROMOTIONS / OFFERS</Text> */}
-        <SectionHeader
-          title={'Promotions / Offers'}
-          viewMoreText={'Explore Promotions'}
-        />
-        <FlatList
-          data={promotions}
-          renderItem={_promotionRenderItem}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.id}
-          horizontal={true}
-          ItemSeparatorComponent={() => (
-            <View style={promotionsListItemStyle.divider} />
-          )}
-        />
-      </View>
+      <PromotionList navigation={navigation} promotions={promotions} />
+
+      <View style={{ marginVertical: 6 }} />
 
       {/* Categories */}
-      <View style={screen.sectionContainer}>
-        <SectionHeader
-          title={'Shop by Category'}
-          viewMoreText={'Explore Categories'}
-        />
-        <FlatList
-          data={categories}
-          renderItem={_categoryRenderItem}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.id}
-          horizontal={true}
-          ItemSeparatorComponent={() => (
-            <View style={categoryListItemStyle.divider} />
-          )}
-          ListFooterComponent={_categoryFooter}
-        />
-      </View>
+      <CategoryList navigation={navigation} categories={categories} />
 
       {/* Discount Items */}
-      <View style={screen.sectionContainer}>
-        <SectionHeader
-          title={'Items on Discount'}
-          viewMoreText={'Explore More'}
-        />
-        <FlatList
-          data={discountItems}
-          renderItem={({ item }) => (
-            <ProductItem item={item} cartItems={items} />
-          )}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.id}
-          horizontal={true}
-          ItemSeparatorComponent={() => (
-            <View style={{ marginHorizontal: 6 }} />
-          )}
-        />
-      </View>
+      <DiscountItemList
+        cartItems={items}
+        discountItems={discountItems}
+        navigation={navigation}
+        onItemPress={item => {
+          setCurrentItem(item);
+          setDetailModal(true);
+        }}
+      />
 
-      {/* Discount Items */}
-      <View style={screen.sectionContainer}>
-        <SectionHeader title={'new Arrivals'} viewMoreText={'Explore Items'} />
-        <FlatList
-          data={productList}
-          renderItem={({ item }) => (
-            <ProductItem item={item} cartItems={items} />
-          )}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.id}
-          horizontal={true}
-          ItemSeparatorComponent={() => (
-            <View style={{ marginHorizontal: 6 }} />
-          )}
+      {/* New Arrivals */}
+      <NewArrivalList
+        cartItems={items}
+        navigation={navigation}
+        productList={productList}
+      />
+
+      {currentItem && detailModal && (
+        <ItemDetailView
+          onRequestClose={() => setDetailModal(false)}
+          visible={detailModal}
+          item={currentItem}
         />
-      </View>
+      )}
     </ScrollView>
   );
 }
 
-function _promotionRenderItem({ item }) {
-  return (
-    <Pressable style={promotionsListItemStyle.container}>
-      <Image
-        source={{ uri: item.image }}
-        resizeMethod={'auto'}
-        resizeMode={'contain'}
-        style={promotionsListItemStyle.image}
+function ProfileImage({ image, title, onPress }) {
+  if (image) {
+    return (
+      <Avatar
+        rounded
+        source={{ uri: image }}
+        size={'small'}
+        onPress={onPress}
       />
-      <View style={promotionsListItemStyle.detailContainer}>
-        <View style={promotionsListItemStyle.textContainer}>
-          <Text style={promotionsListItemStyle.title}>{item.title.en}</Text>
-          <Text style={promotionsListItemStyle.validity}>
-            Valid till{' '}
-            {dayjs(item.validTill.toDate()).format(globalStyles.dateTimeFormat)}
-          </Text>
-        </View>
-        <Image source={icons.BACK} style={promotionsListItemStyle.nextIcon} />
-      </View>
-    </Pressable>
-  );
-}
-
-function _categoryRenderItem({ item }) {
-  return (
-    <View>
-      <Image
-        source={{ uri: item.image }}
-        resizeMethod={'auto'}
-        resizeMode={'contain'}
-        style={categoryListItemStyle.image}
+    );
+  } else {
+    return (
+      <Avatar
+        rounded
+        title={title}
+        size={'small'}
+        onPress={onPress}
+        containerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
+        titleStyle={{ color: '#212121', fontWeight: 'bold', fontSize: 12 }}
       />
-      <Text style={categoryListItemStyle.title}>{item.english}</Text>
-      <Text style={categoryListItemStyle.discount}>{item.items} Items</Text>
-    </View>
-  );
-}
-
-function _categoryFooter() {
-  return (
-    <View style={categoryListItemStyle.footerContainer}>
-      <Image source={icons.BACK} style={categoryListItemStyle.nextIcon} />
-      <Text style={categoryListItemStyle.moreText}>MORE</Text>
-    </View>
-  );
-}
-
-function ProductItem({ item, cartItems }) {
-  const dispatch = useDispatch();
-  const isAvailable = cartItems.find(cartItem => cartItem.id === item.id);
-
-  function onCartUpdate() {
-    if (isAvailable) {
-      dispatch(removeFromCart(item.id));
-    } else {
-      dispatch(addToCart({ ...item, quantity: 1, subtotal: item.price }));
-    }
+    );
   }
-
-  return (
-    <View style={productListStyle.container}>
-      <Image
-        source={{ uri: item.image }}
-        resizeMethod={'auto'}
-        resizeMode={'contain'}
-        style={productListStyle.image}
-      />
-      {item.discount > 0 && (
-        <View style={productListStyle.discountContainer}>
-          <Text style={productListStyle.discount}>{item.discount}% off</Text>
-        </View>
-      )}
-      <Text style={productListStyle.title}>{item.title}</Text>
-      <View style={productListStyle.priceContainer}>
-        {item.discount > 0 && (
-          <Text style={productListStyle.discountedPrice}>
-            Rs.{calculateDiscount(item.discount, item.price)}
-          </Text>
-        )}
-        <Text
-          style={
-            item.discount > 0
-              ? productListStyle.price
-              : productListStyle.withoutDiscountPrice
-          }>
-          Rs.{item.price}
-        </Text>
-      </View>
-      <HorizontalDivider />
-      <Text style={productListStyle.saved}>
-        {item.discount > 0
-          ? `You save Rs.${calculateSavePrice(
-              item.discount,
-              item.price,
-            ).toFixed(2)}`
-          : ''}
-      </Text>
-      <Pressable
-        onPress={onCartUpdate}
-        style={[
-          productListStyle.addToCartContainer,
-          isAvailable
-            ? productListStyle.cartIncludedItemBG
-            : productListStyle.cartExcludedItemBG,
-        ]}>
-        <Text style={productListStyle.addToCartText}>
-          {isAvailable ? 'Remove from Cart' : 'Add to Cart'}
-        </Text>
-      </Pressable>
-    </View>
-  );
-}
-
-function SectionHeader({ title, viewMoreText, onPress }) {
-  return (
-    <View style={sectionHeaderStyles.container}>
-      <Text style={sectionHeaderStyles.title}>{title}</Text>
-      <Pressable onPress={onPress}>
-        <Text style={sectionHeaderStyles.viewMoreText}>{viewMoreText}</Text>
-      </Pressable>
-    </View>
-  );
 }

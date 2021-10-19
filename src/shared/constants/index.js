@@ -1,6 +1,7 @@
+import firestore from '@react-native-firebase/firestore';
 import { Dimensions } from 'react-native';
 
-const iconPath = '../../../assets';
+const iconPath = '../../assets/Icons';
 const extension = '.png';
 
 export const globalStyles = {
@@ -8,6 +9,9 @@ export const globalStyles = {
   fullHeight: '100%',
   fullWidth: '100%',
   screenWidth: Dimensions.get('window').width,
+  row: {
+    flexDirection: 'row',
+  },
   divider: {
     small: 6,
     large: 12,
@@ -22,7 +26,14 @@ export const globalStyles = {
     xlarge: 24,
     xxlarge: 32,
   },
-  dateTimeFormat: 'ddd, DD YYYY hh:mm A',
+  dateTimeFormat: 'MMM ddd, DD YYYY hh: mm A',
+};
+
+export const fonts = {
+  REGULAR: 'Helvetica',
+  LIGHT: 'Helvetica Light',
+  BOLD: 'Helvetica Bold',
+  BOLD_OBLIQUE: 'Helvetica Bold Oblique',
 };
 
 export const collections = {
@@ -33,6 +44,11 @@ export const collections = {
   USERS: 'Users',
 };
 
+export const paths = {
+  USERS: firestore().collection(collections.USERS),
+  ORDERS: firestore().collection(collections.ORDERS),
+};
+
 export const routes = {
   CART_SCREEN: 'Cart',
   CHECKOUT_SCREEN: 'Checkout',
@@ -41,16 +57,29 @@ export const routes = {
   PROFILE_SCREEN: 'Profile',
   ORDER_SCREEN: 'Orders',
   ORDER_DETAIL_SCREEN: 'OrderDetail',
+  PROMOTION_DETAIL_SCREEN: 'PromotionDetail',
+  PROMOTION_LIST_SCREEN: 'PromotionList',
+  CATEGORIES_LIST_SCREEN: 'CategoriesList',
+  PRODUCTS_LIST_SCREEN: 'ProductsList',
+  INTRODUCTION_SCREEN: 'Introduction',
+  EDIT_PROFILE_SCREEN: 'EditProfile',
+  STATISTICS_SCREEN: 'Statistics',
+  TERMS_AND_CONDITIONS: 'TermsAndConditions',
+  PRIVACY_POLICY: 'PrivacyPolicy',
+  REGISTER_VERIFY_SCREEN: 'RegisterVerifyScreen',
+  LOGIN_VERIFY_SCREEN: 'LoginVerifyScreen',
 
   HOME_NAVIGATOR: 'HOME',
 };
 
 export const colors = {
   DARK_BLUE: '#0C5687',
+  LIGHT_BLUE: 'rgba(12, 86, 135, 0.1)',
   WHITE: 'white',
   LIGHT_MANGO: '#F8D162',
   ORANGE: '#ce1a1a',
   PISTACHO: '#6AC6A5',
+  BLACK: '#212121',
 };
 
 export const status = {
@@ -89,4 +118,28 @@ export const icons = {
   CANCELLED: require(`${iconPath}/ic_cancelled${extension}`),
   DELAYED: require(`${iconPath}/ic_delayed${extension}`),
   WEATHER_ISSUES: require(`${iconPath}/ic_weather_issues${extension}`),
+  NEXT_ARROW: require(`${iconPath}/ic_next_arrow${extension}`),
+
+  // Introduction Screen
+  EXPRESS_DELIVERY: require(`${iconPath}/ic_express_delivery${extension}`),
+  WALLET: require(`${iconPath}/ic_wallet${extension}`),
+  GROCERY_ITEMS: require(`${iconPath}/ic_grocery_items${extension}`),
+  ORDER_TRACKING: require(`${iconPath}/ic_order_tracking${extension}`),
+
+  // Profile Screen
+  EDIT: require(`${iconPath}/ic_edit${extension}`),
+  TERMS_AND_CONDITIONS: require(`${iconPath}/ic_terms_and_conditions${extension}`),
+  PRIVACY_POLICY: require(`${iconPath}/ic_privacy_policy${extension}`),
+  STATISTICS: require(`${iconPath}/ic_statistics${extension}`),
+  LOG_OUT: require(`${iconPath}/ic_logout${extension}`),
+  DEFAULT_PROFILE_IMAGE: require(`${iconPath}/ic_default_user${extension}`),
+
+  // Register Screen
+  PERSON: require(`${iconPath}/ic_person${extension}`),
+  PHONE: require(`${iconPath}/ic_phone${extension}`),
+  HOME_NUMBER: require(`${iconPath}/ic_home_number${extension}`),
+  REGISTER_BG: require(`${iconPath}/ic_register_wallpaper.jpg`),
+
+  // Code Verification Screen
+  OTP: require(`${iconPath}/ic_otp${extension}`),
 };

@@ -1,17 +1,17 @@
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import LoginScreen from '../../screens/LoginScreen';
 import ProfileScreen from '../../screens/ProfileScreen';
-import {routes} from '../../shared/constants';
+import { routes } from '../../shared/constants';
 
 const Stack = createStackNavigator();
 
 export default function AuthNavigator() {
-  const {isLoggedIn} = useSelector(state => state.root.user);
+  const { isLoggedIn } = useSelector(state => state.root.user);
   return (
     <Stack.Navigator
-      screenOptions={{headerShown: false}}
+      screenOptions={{ headerShown: false }}
       initialRouteName={
         isLoggedIn ? routes.PROFILE_SCREEN : routes.LOGIN_SCREEN
       }>

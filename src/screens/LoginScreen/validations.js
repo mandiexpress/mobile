@@ -1,8 +1,11 @@
 import * as Yup from 'yup';
 
+const PK_REGEX = /^((\+92)?(0092)?(92)?(0)?)(3)([0-9]{9})$/g;
+
 export default Yup.object().shape({
-  email: Yup.string().email().required('Email is required'),
-  password: Yup.string()
-    .required('Password is required')
-    .min(6, '6 characters minimum required'),
+  phoneNumber: Yup.string()
+    .matches(PK_REGEX, {
+      message: 'Invalid Phone Number',
+    })
+    .required('Phone number cannot be empty'),
 });

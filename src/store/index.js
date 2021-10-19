@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {configureStore, getDefaultMiddleware} from '@reduxjs/toolkit';
-import {combineReducers, compose} from 'redux';
-import {persistReducer, persistStore} from 'redux-persist';
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
 import logger from 'redux-logger';
+import { persistReducer, persistStore } from 'redux-persist';
+import thunk from 'redux-thunk';
 import cartReducer from './reducers/cart';
 import userReducer from './reducers/user';
 
@@ -10,7 +11,7 @@ import userReducer from './reducers/user';
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['cart', 'user'],
+  whitelist: ['cart', 'user', 'grocery'],
 };
 
 // Reducers
@@ -22,22 +23,11 @@ const reducers = combineReducers({
 // Applying Persistence using Reducers
 const persistedReducer = persistReducer(persistConfig, reducers);
 
-// Changing default configuration for middleware
-const middleware = getDefaultMiddleware({
-  serializableCheck: false,
-});
-
-let enhancedCompose = compose;
-if (__DEV__) {
-  enhancedCompose = window._REDUX_DEVTOOLS_EXTENSION_COMPOSE_ || compose;
-  middleware.push(logger);
-}
-
 export const store = configureStore({
   reducer: {
     root: persistedReducer,
   },
-  middleware: enhancedCompose(middleware),
+  middleware: [thunk, logger],
 });
 
 export const persist = persistStore(store);
