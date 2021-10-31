@@ -7,7 +7,6 @@ export default StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    flex: 1,
     backgroundColor: 'white',
   },
   image: {
@@ -67,9 +66,9 @@ export default StyleSheet.create({
     opacity: 0.5,
     fontFamily: fonts.REGULAR,
     fontWeight: '400',
+    marginBottom: 12,
   },
   similarContainer: {
-    flex: 1,
     paddingHorizontal: 12,
   },
 });

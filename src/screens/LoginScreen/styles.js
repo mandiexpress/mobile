@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors } from '../../shared/constants';
+import { colors, fonts } from '../../shared/constants';
 
 export default StyleSheet.create({
   container: {
@@ -11,21 +11,21 @@ export default StyleSheet.create({
   },
   button: {
     paddingVertical: 16,
-    backgroundColor: colors.LIGHT_BLUE,
+    backgroundColor: colors.DARK_BLUE,
     width: '100%',
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 4,
+    borderRadius: 6,
     borderColor: colors.DARK_BLUE,
     borderWidth: 0.5,
   },
   loginButton: {
     fontSize: 14,
     textTransform: 'uppercase',
-    fontWeight: 'bold',
+    fontFamily: fonts.BOLD,
     letterSpacing: 1,
-    color: colors.DARK_BLUE,
+    color: colors.WHITE,
   },
   errorText: {
     color: 'darkred',
@@ -33,6 +33,7 @@ export default StyleSheet.create({
     marginTop: 6,
     marginBottom: 8,
     textAlign: 'right',
+    fontFamily: fonts.REGULAR,
   },
   forgetButton: {
     color: 'gray',

@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors } from '../../shared/constants';
+import { colors, fonts } from '../../shared/constants';
 
 export default StyleSheet.create({
   container: {
@@ -12,9 +12,10 @@ export default StyleSheet.create({
   },
   singleFlex: {
     flex: 1,
+    fontSize: 12,
   },
-  centerContent: {
-    alignSelf: 'center',
+  emptyCartContainer: {
+    paddingHorizontal: 12,
   },
   row: {
     flexDirection: 'row',
@@ -31,13 +32,12 @@ export default StyleSheet.create({
     width: 24,
     height: 24,
     resizeMode: 'contain',
-    tintColor: 'red',
   },
   emptyListContent: {
     height: '100%',
   },
   populatedListContent: {
-    marginVertical: 12,
+    paddingVertical: 12,
   },
   emptyListContainer: {
     alignContent: 'center',
@@ -65,25 +65,17 @@ export default StyleSheet.create({
   },
   footerContainer: {
     padding: 12,
-    borderWidth: 0.5,
-    borderColor: 'rgba(12, 86, 135, 0.2)',
-    marginHorizontal: 12,
-    marginVertical: 6,
-    borderRadius: 6,
-    backgroundColor: 'rgba(12, 86, 135, 0.1)',
+    marginHorizontal: 6,
+    borderRadius: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
     flexDirection: 'row',
   },
-  footerSuccessBG: {
-    backgroundColor: 'rgba(78, 159, 45, 0.2)',
-  },
   subtotal: {
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontFamily: fonts.BOLD,
     color: colors.DARK_BLUE,
   },
   totalItems: {
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontFamily: fonts.BOLD,
   },
   nextButton: {
     width: 38,
@@ -97,26 +89,28 @@ export default StyleSheet.create({
     paddingHorizontal: 12,
   },
   listItemImage: {
-    width: 100,
-    height: 100,
+    width: 75,
+    height: 75,
     resizeMode: 'contain',
+    alignSelf: 'center',
   },
   listItemContentContainer: {
     flex: 1,
-    marginHorizontal: 6,
+    marginHorizontal: 12,
   },
   listItemTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontFamily: fonts.BOLD,
   },
   listItemPrice: {
     fontSize: 12,
+    fontFamily: fonts.REGULAR,
     marginTop: 6,
   },
   listItemSubtotal: {
     fontSize: 12,
     alignSelf: 'flex-end',
-    fontWeight: 'bold',
+    fontFamily: fonts.BOLD,
     color: colors.DARK_BLUE,
   },
   counterStyle: {
@@ -127,14 +121,14 @@ export default StyleSheet.create({
   countStyle: {
     width: 28,
     paddingVertical: 6,
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    backgroundColor: 'rgba(0, 0, 0, 0.03)',
     borderRadius: 3,
     marginVertical: 8,
     marginHorizontal: 16,
     flex: 1,
   },
   countTextStyle: {
-    fontWeight: 'bold',
+    fontFamily: fonts.BOLD,
     textAlign: 'center',
     color: colors.DARK_BLUE,
   },

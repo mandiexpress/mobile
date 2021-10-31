@@ -6,7 +6,12 @@ import ProductItem from '../ProductItem';
 import ItemFooter from '../ItemFooter';
 import styles from './styles';
 
-export default function NewArrivalList({ navigation, productList, cartItems }) {
+export default function NewArrivalList({
+  navigation,
+  productList,
+  cartItems,
+  onItemPress,
+}) {
   function onFooterPress() {
     const model = {
       query: null,
@@ -21,13 +26,18 @@ export default function NewArrivalList({ navigation, productList, cartItems }) {
       <FlatList
         data={productList}
         renderItem={({ item }) => {
-          return <ProductItem item={item} cartItems={cartItems} />;
+          return (
+            <ProductItem
+              item={item}
+              cartItems={cartItems}
+              onItemPress={() => onItemPress(item)}
+            />
+          );
         }}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id}
         horizontal={true}
-        ItemSeparatorComponent={() => <View style={{ marginHorizontal: 6 }} />}
         ListFooterComponent={() => (
           <ItemFooter
             navigation={navigation}

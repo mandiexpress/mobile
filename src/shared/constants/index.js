@@ -42,6 +42,7 @@ export const collections = {
   ORDERS: 'Orders',
   PRODUCTS: 'Products',
   USERS: 'Users',
+  REVIEWS: 'reviews',
 };
 
 export const paths = {
@@ -61,6 +62,7 @@ export const routes = {
   PROMOTION_LIST_SCREEN: 'PromotionList',
   CATEGORIES_LIST_SCREEN: 'CategoriesList',
   PRODUCTS_LIST_SCREEN: 'ProductsList',
+  PRODUCTS_DISCOUNT_SCREEN: 'ProductDiscountList',
   INTRODUCTION_SCREEN: 'Introduction',
   EDIT_PROFILE_SCREEN: 'EditProfile',
   STATISTICS_SCREEN: 'Statistics',
@@ -68,6 +70,9 @@ export const routes = {
   PRIVACY_POLICY: 'PrivacyPolicy',
   REGISTER_VERIFY_SCREEN: 'RegisterVerifyScreen',
   LOGIN_VERIFY_SCREEN: 'LoginVerifyScreen',
+  ITEM_DETAIL_SCREEN: 'ItemDetailScreen',
+  LIST_ADDRESS_SCREEN: 'ListAddressScreen',
+  FAVORITE_LIST: 'FavoriteScreen',
 
   HOME_NAVIGATOR: 'HOME',
 };
@@ -133,13 +138,33 @@ export const icons = {
   STATISTICS: require(`${iconPath}/ic_statistics${extension}`),
   LOG_OUT: require(`${iconPath}/ic_logout${extension}`),
   DEFAULT_PROFILE_IMAGE: require(`${iconPath}/ic_default_user${extension}`),
+  ADDRESS: require(`${iconPath}/ic_address${extension}`),
 
   // Register Screen
   PERSON: require(`${iconPath}/ic_person${extension}`),
   PHONE: require(`${iconPath}/ic_phone${extension}`),
   HOME_NUMBER: require(`${iconPath}/ic_home_number${extension}`),
-  REGISTER_BG: require(`${iconPath}/ic_register_wallpaper.jpg`),
+  REGISTER_BG: require(`${iconPath}/ic_register_wallpaper.jpeg`),
 
   // Code Verification Screen
   OTP: require(`${iconPath}/ic_otp${extension}`),
+
+  // Item Detail SCREEN
+  CLOSE: require(`${iconPath}/ic_close${extension}`),
+  LIKE: require(`${iconPath}/ic_like${extension}`),
+  SHARE: require(`${iconPath}/ic_share${extension}`),
+
+  // Edit Profile Screen
+  DROP_DOWN: require(`${iconPath}/ic_drop_down${extension}`),
+  MALE: require(`${iconPath}/ic_male${extension}`),
+  FEMALE: require(`${iconPath}/ic_female${extension}`),
+  OTHER: require(`${iconPath}/ic_star${extension}`),
+  TICK: require(`${iconPath}/ic_tick${extension}`),
+  GENDER: require(`${iconPath}/ic_gender${extension}`),
+};
+
+export const images = {
+  AUTH: require('../../assets/Images/auth.jpg'),
+  WELCOME: require('../../assets/Images/welcome.jpg'),
+  IMAGE_PICKER: require('../../assets/Images/image-picker.png'),
 };

@@ -3,14 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
-import { Provider, useDispatch } from 'react-redux';
+import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import Loader from './src/components/Loader';
-
 import MainNavigator from './src/routes/MainNavigator';
-import { fetchPromotions } from './src/screens/HomeScreen/api';
 import { globalStyles } from './src/shared/constants';
-import { store, persist } from './src/store';
+import { persist, store } from './src/store';
 
 export default function App() {
   const [loading, setLoading] = useState(true);

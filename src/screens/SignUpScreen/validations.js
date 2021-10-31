@@ -7,5 +7,5 @@ export default Yup.object().shape({
   phone: Yup.string()
     .required('Phone number is required')
     .matches(phoneRegExp, 'Phone number should start with 03'),
-  houseNumber: Yup.string().required('House number is required').trim(),
+  house: Yup.string().required('House number is required').trim(),
 });

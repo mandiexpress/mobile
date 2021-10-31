@@ -1,25 +1,33 @@
 import firestore from '@react-native-firebase/firestore';
 import dayjs from 'dayjs';
-import React, {useEffect, useState} from 'react';
-import {FlatList, Image, Pressable, Text, View} from 'react-native';
-import {useSelector} from 'react-redux';
-import {icons, routes, status} from '../../shared/constants';
+import React, { useEffect, useState } from 'react';
+import {
+  FlatList,
+  Image,
+  Pressable,
+  SafeAreaView,
+  Text,
+  View,
+} from 'react-native';
+import { useSelector } from 'react-redux';
+import { routes } from '../../shared/constants';
 import {
   getOrderStatus,
   getOrderStatusColor,
   getOrderStatusGraphic,
 } from '../../shared/utils';
 import styles from './styles';
+import Header from '../../components/Header';
 
-export default function OrdersScreen({navigation}) {
-  const {user} = useSelector(state => state.root.user);
+export default function OrdersScreen({ navigation }) {
+  const { user } = useSelector(state => state.root.user);
   const [orders, setOrders] = useState([]);
 
   function onResult(QuerySnapshot) {
     const documents = QuerySnapshot.docs;
     const data = [];
     for (const order of documents) {
-      data.push({...order.data(), id: order.id});
+      data.push({ ...order.data(), id: order.id });
     }
     setOrders(data);
   }
@@ -32,14 +40,15 @@ export default function OrdersScreen({navigation}) {
     const subscriber = firestore()
       .collection('Orders')
       .where('placedBy', '==', user.id)
-      .onSnapshot({includeMetadataChanges: true}, onResult, onError);
+      .onSnapshot({ includeMetadataChanges: true }, onResult, onError);
 
     return () => subscriber();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <Header navigation={navigation} title={'My Orders'} />
       <FlatList
         keyExtractor={item => item.id}
         data={orders}
@@ -47,7 +56,7 @@ export default function OrdersScreen({navigation}) {
           orders.length === 0 ? styles.listContainer : styles.emptyListContainer
         }
         ItemSeparatorComponent={() => <View style={styles.divider} />}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return (
             <Pressable
               style={styles.itemContainer}
@@ -61,17 +70,19 @@ export default function OrdersScreen({navigation}) {
                 />
               </View>
               <View style={styles.orderStatusContainer}>
-                <Text style={styles.bold}>{item.totalItems} Items</Text>
+                <Text style={styles.bold}>
+                  {item.totalItems} item{item.totalItems > 1 ? 's' : ''}
+                </Text>
                 <Text
                   numberOfLines={2}
                   style={[
                     styles.orderStatusText,
-                    {color: getOrderStatusColor(item.status)},
+                    { color: getOrderStatusColor(item.status) },
                   ]}>
                   {getOrderStatus(item.status)}
                 </Text>
                 <Text numberOfLines={2} style={styles.orderAddressText}>
-                  {item.address}
+                  {item.address.complete}
                 </Text>
               </View>
               <View style={styles.orderTimeAndPriceContainer}>
@@ -85,6 +96,6 @@ export default function OrdersScreen({navigation}) {
           );
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }

@@ -7,18 +7,22 @@ import styles from './styles';
 export default function Header({
   navigation,
   title,
+  titleStyle = {},
   rightComponent,
+  leftComponent = true,
   backNavStyle = {},
   placement = 'left',
 }) {
   return (
     <RNEHeader
       leftComponent={
-        <Pressable
-          style={[styles.backNav, backNavStyle]}
-          onPress={() => navigation.pop()}>
-          <Image source={icons.BACK} style={styles.backNavIcon} />
-        </Pressable>
+        leftComponent && (
+          <Pressable
+            style={[styles.backNav, backNavStyle]}
+            onPress={() => navigation.pop()}>
+            <Image source={icons.BACK} style={styles.backNavIcon} />
+          </Pressable>
+        )
       }
       containerStyle={{
         paddingHorizontal: 0,
@@ -28,7 +32,7 @@ export default function Header({
       statusBarProps={{ backgroundColor: '#212121' }}
       centerComponent={
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>{title}</Text>
+          <Text style={[styles.title, titleStyle]}>{title}</Text>
         </View>
       }
       backgroundColor={'white'}

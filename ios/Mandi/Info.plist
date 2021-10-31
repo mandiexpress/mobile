@@ -72,5 +72,9 @@
 		<string>HelveticaOblique.ttf</string>
 		<string>HelveticaRoundedBold.otf</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Pick a picture from your Gallery to express yourself</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Capture an image using your Camera to express yourself</string>
 </dict>
 </plist>

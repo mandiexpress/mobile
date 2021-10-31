@@ -3,15 +3,15 @@ import {
   Image,
   Pressable,
   RefreshControl,
+  SafeAreaView,
   ScrollView,
-  Text,
   View,
 } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 import CategoryList from '../../components/CategoryList';
 import DiscountItemList from '../../components/DiscountItemList';
-import ItemDetailView from '../../components/ItemDetailView';
+import Header from '../../components/Header';
 import NewArrivalList from '../../components/NewArrivalList';
 import PromotionList from '../../components/PromotionList';
 import {
@@ -22,7 +22,7 @@ import {
 } from '../../shared/api';
 import { icons, routes } from '../../shared/constants';
 import { getInitials } from '../../shared/utils';
-import { screen } from './styles';
+import styles from './styles';
 
 export default function HomeScreen({ navigation }) {
   const [promotions, setPromotions] = useState(null);
@@ -30,8 +30,6 @@ export default function HomeScreen({ navigation }) {
   const [productList, setProductList] = useState(null);
   const [discountItems, setDiscountItems] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [detailModal, setDetailModal] = useState(false);
-  const [currentItem, setCurrentItem] = useState(null);
 
   const { items } = useSelector(state => state.root.cart);
   const { user } = useSelector(state => state.root.user);
@@ -102,79 +100,69 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   return (
-    <ScrollView
-      contentContainerStyle={screen.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }>
-      {/* App Name */}
-      <View
-        style={{
-          flexDirection: 'row',
-          flex: 1,
-        }}>
-        <Text style={screen.appName}>Mandii Express</Text>
-
-        {user ? (
-          <ProfileImage
-            image={user.image}
-            title={getInitials(user.name)}
-            onPress={onProfilePress}
-          />
-        ) : (
-          <Pressable
-            onPress={onProfilePress}
-            style={{
-              justifyContent: 'center',
-              alignContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Image
-              source={icons.PROFILE}
-              style={{
-                width: 24,
-                height: 24,
-              }}
-            />
-          </Pressable>
-        )}
-      </View>
-
-      {/* Promotions */}
-      <PromotionList navigation={navigation} promotions={promotions} />
-
-      <View style={{ marginVertical: 6 }} />
-
-      {/* Categories */}
-      <CategoryList navigation={navigation} categories={categories} />
-
-      {/* Discount Items */}
-      <DiscountItemList
-        cartItems={items}
-        discountItems={discountItems}
+    <SafeAreaView style={styles.safeAreaViewStyle}>
+      <Header
         navigation={navigation}
-        onItemPress={item => {
-          setCurrentItem(item);
-          setDetailModal(true);
-        }}
+        title={'Mandii Express'}
+        leftComponent={false}
+        titleStyle={styles.headerTitleStyle}
+        rightComponent={
+          <AuthContainer user={user} onProfilePress={onProfilePress} />
+        }
       />
+      <ScrollView
+        contentContainerStyle={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
+        {/* Promotions */}
+        <PromotionList navigation={navigation} promotions={promotions} />
 
-      {/* New Arrivals */}
-      <NewArrivalList
-        cartItems={items}
-        navigation={navigation}
-        productList={productList}
-      />
+        <View style={styles.divider} />
 
-      {currentItem && detailModal && (
-        <ItemDetailView
-          onRequestClose={() => setDetailModal(false)}
-          visible={detailModal}
-          item={currentItem}
+        {/* Categories */}
+        <CategoryList navigation={navigation} categories={categories} />
+
+        {/* Discount Items */}
+        <DiscountItemList
+          cartItems={items}
+          discountItems={discountItems}
+          navigation={navigation}
+          onItemPress={item => {
+            navigation.navigate(routes.ITEM_DETAIL_SCREEN, item);
+          }}
         />
-      )}
-    </ScrollView>
+
+        {/* New Arrivals */}
+        <NewArrivalList
+          cartItems={items}
+          navigation={navigation}
+          productList={productList}
+          onItemPress={item => {
+            navigation.navigate(routes.ITEM_DETAIL_SCREEN, item);
+          }}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
+}
+
+function AuthContainer({ user, onProfilePress }) {
+  if (user) {
+    return (
+      <ProfileImage
+        image={user.image}
+        title={getInitials(user.name)}
+        onPress={onProfilePress}
+      />
+    );
+  } else {
+    return (
+      <Pressable onPress={onProfilePress} style={styles.authContainer}>
+        <Image source={icons.PROFILE} style={styles.profileImage} />
+      </Pressable>
+    );
+  }
 }
 
 function ProfileImage({ image, title, onPress }) {
@@ -185,6 +173,7 @@ function ProfileImage({ image, title, onPress }) {
         source={{ uri: image }}
         size={'small'}
         onPress={onPress}
+        containerStyle={styles.avatarContainerStyle}
       />
     );
   } else {
@@ -194,8 +183,8 @@ function ProfileImage({ image, title, onPress }) {
         title={title}
         size={'small'}
         onPress={onPress}
-        containerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
-        titleStyle={{ color: '#212121', fontWeight: 'bold', fontSize: 12 }}
+        containerStyle={styles.avatarContainerStyle}
+        titleStyle={styles.avatarTitleStyle}
       />
     );
   }

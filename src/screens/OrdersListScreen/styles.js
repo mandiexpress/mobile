@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-import {colors} from '../../shared/constants';
+import { StyleSheet } from 'react-native';
+import { colors } from '../../shared/constants';
 
 export default StyleSheet.create({
   container: {
@@ -32,6 +32,7 @@ export default StyleSheet.create({
   orderStatusIcon: {
     width: 32,
     height: 32,
+    marginHorizontal: 6,
     resizeMode: 'contain',
   },
   orderStatusContainer: {

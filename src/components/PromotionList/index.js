@@ -16,7 +16,7 @@ export default function PromotionList({
   }
 
   return (
-    <View style={styles.sectionContainer}>
+    <View>
       {showHeader && <SectionHeader title={'Promotions / Offers'} />}
       <FlatList
         data={promotions}

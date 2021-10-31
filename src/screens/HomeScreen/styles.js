@@ -2,7 +2,18 @@ import { StyleSheet } from 'react-native';
 import { colors, fonts, globalStyles } from '../../shared/constants';
 
 // Screen Styles
-export const screen = StyleSheet.create({
+export default StyleSheet.create({
+  safeAreaViewStyle: {
+    flex: 1,
+  },
+  headerTitleStyle: {
+    color: 'black',
+    fontSize: 18,
+    fontFamily: fonts.BOLD,
+  },
+  divider: {
+    marginVertical: 6,
+  },
   container: {
     backgroundColor: colors.WHITE,
     padding: 12,
@@ -61,5 +72,24 @@ export const screen = StyleSheet.create({
     marginBottom: 12,
     color: 'black',
     opacity: 0.3,
+  },
+  authContainer: {
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    paddingEnd: 12,
+  },
+  profileImage: {
+    width: 24,
+    height: 24,
+  },
+  avatarContainerStyle: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    marginEnd: 12,
+  },
+  avatarTitleStyle: {
+    color: '#212121',
+    fontWeight: 'bold',
+    fontSize: 12,
   },
 });

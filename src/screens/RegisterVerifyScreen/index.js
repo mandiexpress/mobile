@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import auth from '@react-native-firebase/auth';
+import OTPInputView from '@twotalltotems/react-native-otp-input';
+import React, { useEffect, useState } from 'react';
 import {
+  Image,
+  Keyboard,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  Keyboard,
-  Image,
   View,
-  Pressable,
 } from 'react-native';
 import OtpVerify from 'react-native-otp-verify';
-import OTPInputView from '@twotalltotems/react-native-otp-input';
-import { colors, icons, routes } from '../../shared/constants';
-import auth from '@react-native-firebase/auth';
-import Loader from '../../components/Loader';
 import { useDispatch } from 'react-redux';
+import Loader from '../../components/Loader';
+import { colors, icons, routes } from '../../shared/constants';
 import { login } from '../../store/reducers/user';
-import dayjs from 'dayjs';
 
 export default function RegisterVerifyScreen({ navigation, route }) {
   const dispatch = useDispatch();

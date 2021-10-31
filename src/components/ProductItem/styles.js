@@ -103,7 +103,6 @@ export default StyleSheet.create({
     resizeMode: 'contain',
     tintColor: 'white',
   },
-
   quantityText: {
     flex: 1,
     textAlign: 'center',

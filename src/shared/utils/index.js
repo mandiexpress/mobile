@@ -88,26 +88,41 @@ export function getInitials(name) {
   return initials.toUpperCase();
 }
 
-export function getSectors(area = '') {
-  const areaObj = towns.find(item => item.value === area);
-  if (areaObj) {
-    return areaObj.sectors;
-  } else {
-    return [];
+export function getSectors(area) {
+  if (area === null) {
+    return;
   }
-}
-
-export function getBlocks(area = '', sector = '') {
   const areaObj = towns.find(item => item.value === area);
   if (!areaObj) {
     return [];
   }
-  const sectorObj = areaObj.sectors.find(item => item.value === sector);
-  if (sectorObj) {
-    return sectorObj.blocks;
-  } else {
-    return [];
+
+  // If there is an area but no sectors
+  if (areaObj && !areaObj.sectors) {
+    return null;
   }
+
+  // If there is an area and sector
+  return areaObj.sectors;
+}
+
+export function getBlocks(area, sector) {
+  const areaObj = towns.filter(item => item.value === area);
+  if (areaObj.length > 0) {
+    const blocks = areaObj[0].blocks.filter(item => item.sector === sector);
+    return blocks;
+  }
+  // const areaObj = towns.find(item => item.value === area);
+  // if (!areaObj && !areaObj.blocks) {
+  //   return null;
+  // }
+
+  // const blocks = areaObj.blocks.filter(item => item.sector === sector);
+  // if (blocks && blocks.length > 0) {
+  //   return blocks;
+  // } else {
+  //   return null;
+  // }
 }
 
 export function capitalize(text, splitter) {

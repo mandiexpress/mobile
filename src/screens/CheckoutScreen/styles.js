@@ -1,4 +1,5 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
+import { colors } from '../../shared/constants';
 
 export default StyleSheet.create({
   container: {
@@ -6,12 +7,9 @@ export default StyleSheet.create({
     margin: 18,
   },
   headContainer: {
-    backgroundColor: 'white',
-    borderWidth: 0.01,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    marginTop: '5%',
-    padding: '2%',
+    // borderWidth: 0.01,
+    // borderTopRightRadius: 10,
+    // borderTopLeftRadius: 10,
   },
   headerDetail: {
     flexDirection: 'row',
@@ -67,5 +65,36 @@ export default StyleSheet.create({
     textAlign: 'right',
     marginBottom: 6,
     alignSelf: 'flex-end',
+  },
+  errorUnderline: {
+    borderBottomColor: 'darkred',
+  },
+  normalUnderline: {
+    borderBottomColor: colors.DARK_BLUE,
+  },
+  dropdownEnabledTextStyle: {
+    fontWeight: '600',
+    color: '#212121',
+    fontSize: 12,
+  },
+
+  bottomDivider: {
+    marginBottom: 12,
+  },
+
+  divider: {
+    marginTop: 12,
+  },
+  dropdownDisabledTextStyle: {
+    fontWeight: 'bold',
+    color: 'gray',
+    fontSize: 12,
+  },
+  textInputStyle: {
+    flex: 1,
+    color: colors.BLACK,
+    fontSize: 14,
+    paddingHorizontal: 8,
+    paddingVertical: 16,
   },
 });

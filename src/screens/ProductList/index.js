@@ -4,7 +4,7 @@ import { FlatList, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import Header from '../../components/Header';
 import ProductItem from '../../components/ProductItem';
-import { collections } from '../../shared/constants';
+import { collections, routes } from '../../shared/constants';
 
 export default function ProductList({ navigation, route }) {
   const { params } = route;
@@ -16,10 +16,12 @@ export default function ProductList({ navigation, route }) {
   async function fetchCategories() {
     try {
       if (params.query) {
+        console.log(params);
         const { fieldPath, operator, value } = params.query;
         const { docs, size } = await firestore()
           .collection(collections.PRODUCTS)
           .where(fieldPath, operator, value)
+          .orderBy(fieldPath, 'desc')
           .limit(10)
           .get();
         updateState(docs, size);
@@ -43,6 +45,7 @@ export default function ProductList({ navigation, route }) {
         const { docs, size } = await firestore()
           .collection(collections.PRODUCTS)
           .where(fieldPath, operator, value)
+          .orderBy('discount', 'desc')
           .startAfter(lastDoc)
           .limit(10)
           .get();
@@ -87,15 +90,18 @@ export default function ProductList({ navigation, route }) {
         columnWrapperStyle={{
           marginVertical: 4,
         }}
+        contentContainerStyle={{ marginStart: 6, marginVertical: 6 }}
         renderItem={({ item }) => {
           return (
             <ProductItem
               item={item}
               cartItems={items}
+              onItemPress={() =>
+                navigation.navigate(routes.ITEM_DETAIL_SCREEN, item)
+              }
               containerStyle={{
                 flex: 1,
                 backgroundColor: 'white',
-                marginHorizontal: 4,
               }}
             />
           );

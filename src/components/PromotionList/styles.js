@@ -2,9 +2,6 @@ import { StyleSheet } from 'react-native';
 import { fonts, globalStyles } from '../../shared/constants';
 
 export default StyleSheet.create({
-  sectionContainer: {
-    marginTop: 12,
-  },
   divider: {
     marginHorizontal: globalStyles.divider.small,
   },

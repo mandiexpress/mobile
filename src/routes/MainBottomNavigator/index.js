@@ -3,10 +3,8 @@ import React from 'react';
 import { Image } from 'react-native';
 import { useSelector } from 'react-redux';
 import CartScreen from '../../screens/CartScreen';
-import HomeScreen from '../../screens/HomeScreen';
-import { colors, icons, routes } from '../../shared/constants';
-import OrdersNavigator from '../OrdersNavigator';
-import AuthNavigator from '../AuthNavigator';
+import { colors, icons } from '../../shared/constants';
+import HomeStackNavigator from '../HomeStackNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -30,7 +28,7 @@ function MainBottomNavigator() {
     <Tab.Navigator tabBarOptions={tabBarOptions}>
       <Tab.Screen
         name={'Home'}
-        component={HomeScreen}
+        component={HomeStackNavigator}
         options={{
           tabBarLabel: 'HOME',
           tabBarIcon: ({ focused }) => {

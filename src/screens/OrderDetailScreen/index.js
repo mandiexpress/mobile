@@ -1,21 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import {Pressable, Image, Text, View, FlatList} from 'react-native';
-import {colors, icons} from '../../shared/constants';
+import React, { useEffect, useState } from 'react';
+import { Pressable, Image, Text, View, FlatList } from 'react-native';
+import { colors, icons } from '../../shared/constants';
 import HorizontalDivider from '../../components/HorizontalDivider';
-import {getOrderStatus, getOrderStatusColor} from '../../shared/utils';
+import { getOrderStatus, getOrderStatusColor } from '../../shared/utils';
 import styles from './styles';
 import firestore from '@react-native-firebase/firestore';
 import OrderDetailContainer from '../../components/OrderDetailContainer';
-import {Divider} from 'react-native-elements/dist/divider/Divider';
+import { Divider } from 'react-native-elements/dist/divider/Divider';
 
-export default function OrderDetailScreen({navigation, route}) {
-  const {params} = route;
+export default function OrderDetailScreen({ navigation, route }) {
+  const { params } = route;
   const [order, setOrder] = useState(params);
   const [items, setItems] = useState(null);
 
   function onOrderResult(QuerySnapshot) {
     const document = QuerySnapshot.data();
-    setOrder({...document, id: QuerySnapshot.id});
+    setOrder({ ...document, id: QuerySnapshot.id });
   }
 
   function onOrderError(error) {
@@ -24,14 +24,14 @@ export default function OrderDetailScreen({navigation, route}) {
 
   async function fetchItems() {
     try {
-      const {docs} = await firestore()
+      const { docs } = await firestore()
         .collection('Orders')
         .doc(params.id)
         .collection('Items')
         .get();
       const data = [];
       for (const item of docs) {
-        data.push({...item.data(), id: item.id});
+        data.push({ ...item.data(), id: item.id });
       }
       setItems(data);
     } catch (err) {
@@ -43,7 +43,11 @@ export default function OrderDetailScreen({navigation, route}) {
     const subscriber = firestore()
       .collection('Orders')
       .doc(params.id)
-      .onSnapshot({includeMetadataChanges: true}, onOrderResult, onOrderError);
+      .onSnapshot(
+        { includeMetadataChanges: true },
+        onOrderResult,
+        onOrderError,
+      );
 
     return () => subscriber();
   }, []);
@@ -53,8 +57,8 @@ export default function OrderDetailScreen({navigation, route}) {
   }, []);
 
   return (
-    <View style={{flex: 1, padding: 24, backgroundColor: colors.WHITE}}>
-      <View style={{flexDirection: 'row'}}>
+    <View style={{ flex: 1, padding: 24, backgroundColor: colors.WHITE }}>
+      <View style={{ flexDirection: 'row' }}>
         <Pressable
           onPress={() => navigation.pop()}
           style={{
@@ -73,7 +77,7 @@ export default function OrderDetailScreen({navigation, route}) {
         </Pressable>
         <Text style={styles.headerTitle}>Order Detail</Text>
       </View>
-      <View style={{marginTop: 24}}>
+      <View style={{ marginTop: 24 }}>
         <TextItem title={'Order #'} value={order.id.substring(0, 6)} divider />
         <TextItem
           title={'Status'}
@@ -84,7 +88,7 @@ export default function OrderDetailScreen({navigation, route}) {
           }}
           divider
         />
-        <TextItem title={'Address'} value={order.address} divider />
+        <TextItem title={'Address'} value={order.address.complete} divider />
         <TextItem title={'Contact'} value={order.phone} divider />
         <TextItem
           title={'Total Charges'}
@@ -96,14 +100,16 @@ export default function OrderDetailScreen({navigation, route}) {
       </View>
       <FlatList
         data={items}
-        contentContainerStyle={{marginTop: 12}}
+        contentContainerStyle={{ marginTop: 12 }}
         showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id}
         ItemSeparatorComponent={() => <HorizontalDivider />}
         ListHeaderComponent={() => {
-          return <Text style={{fontSize: 18, fontWeight: 'bold'}}>Items</Text>;
+          return (
+            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Items</Text>
+          );
         }}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return <OrderDetailContainer item={item} />;
         }}
       />
@@ -111,12 +117,12 @@ export default function OrderDetailScreen({navigation, route}) {
   );
 }
 
-function TextItem({title, value, valueStyle = {}, divider = false}) {
+function TextItem({ title, value, valueStyle = {}, divider = false }) {
   return (
     <View>
-      <View style={{flexDirection: 'row'}}>
-        <Text style={{flex: 1, fontSize: 12}}>{title}</Text>
-        <Text style={[valueStyle]}>{value}</Text>
+      <View style={{ flexDirection: 'row' }}>
+        <Text style={{ flex: 0.5, fontSize: 12 }}>{title}</Text>
+        <Text style={[{ flex: 1 }, valueStyle]}>{value}</Text>
       </View>
       {divider && <HorizontalDivider />}
     </View>

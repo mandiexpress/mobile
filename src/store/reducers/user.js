@@ -38,6 +38,7 @@ const userSlice = createSlice({
     isLoggedIn: false,
     user: null,
     firstTime: true,
+    favorites: [],
   },
   reducers: {
     login: (state, action) => {
@@ -51,6 +52,16 @@ const userSlice = createSlice({
     disableIntroduction: state => {
       state.firstTime = false;
     },
+    addToFavorites: (state, action) => {
+      state.favorites.push(action.payload);
+    },
+    removeFromFavorites: (state, action) => {
+      const itemId = action.payload;
+      state.favorites = state.favorites.filter(item => item.id !== itemId);
+    },
+    updateLocalUser: (state, action) => {
+      state.user = { ...state.user, ...action.payload };
+    },
   },
   extraReducers: {
     [loginUser.fulfilled]: (state, action) => {
@@ -63,5 +74,12 @@ const userSlice = createSlice({
   },
 });
 
-export const { login, logout, disableIntroduction } = userSlice.actions;
+export const {
+  login,
+  logout,
+  disableIntroduction,
+  addToFavorites,
+  removeFromFavorites,
+  updateLocalUser,
+} = userSlice.actions;
 export default userSlice.reducer;

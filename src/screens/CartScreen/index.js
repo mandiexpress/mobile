@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Alert, FlatList, Image, Pressable, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { colors, icons, routes } from '../../shared/constants';
+import { colors, fonts, icons, routes } from '../../shared/constants';
 import {
   emptyCart,
   removeFromCart,
   updateQuantity,
 } from '../../store/reducers/cart';
+import Header from '../../components/Header';
 import styles from './styles';
 
-function CartScreen({ navigation }) {
+export default function CartScreen({ navigation }) {
   const dispatch = useDispatch();
   const { items } = useSelector(state => state.root.cart);
 
@@ -46,17 +47,21 @@ function CartScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {items.length > 0 && (
-        <View style={styles.headerContainer}>
-          <View style={styles.singleFlex}>
-            <Text style={styles.headerTitle}>Cart</Text>
-            <Text style={styles.headerSubtitle}>
-              Long Press to remove an item
-            </Text>
-          </View>
-          <Pressable onPress={onEmptyCart} style={styles.centerContent}>
-            <Image style={styles.deleteIcon} source={icons.DELETE} />
-          </Pressable>
-        </View>
+        <Header
+          navigation={navigation}
+          titleStyle={{ fontSize: 21, fontFamily: fonts.BOLD }}
+          backNavStyle={{ display: 'none' }}
+          title={'Cart'}
+          rightComponent={() => {
+            return (
+              <Pressable
+                onPress={onEmptyCart}
+                style={styles.emptyCartContainer}>
+                <Image style={styles.deleteIcon} source={icons.DELETE} />
+              </Pressable>
+            );
+          }}
+        />
       )}
       <View style={styles.singleFlex}>
         <FlatList
@@ -76,37 +81,41 @@ function CartScreen({ navigation }) {
       </View>
       {items.length > 0 && (
         <View>
-          <View
-            style={[
-              styles.footerContainer,
-              {
-                backgroundColor:
-                  subtotal() > 500
-                    ? styles.footerSuccessBG.backgroundColor
-                    : styles.footerContainer.backgroundColor,
-              },
-            ]}>
-            <Text style={{ fontSize: 12 }}>
-              {subtotal() > 500
-                ? 'Yay! you get free delivery'
-                : 'Order more than 500 gets free delivery'}
-            </Text>
-          </View>
-          <Pressable
-            style={styles.footerContainer}
-            onPress={onNavigateToCheckout}>
+          <View style={styles.footerContainer}>
             <View style={styles.singleFlex}>
               <View style={styles.row}>
                 <Text style={styles.singleFlex}>Subtotal</Text>
                 <Text style={styles.subtotal}>Rs. {subtotal()}</Text>
+              </View>
+              <View style={[styles.row, { marginVertical: 2 }]}>
+                <Text style={styles.singleFlex}>Delivery Charges</Text>
+                <Text style={styles.totalItems}>
+                  {subtotal() > 500 ? 'Free' : 'Rs.30'}
+                </Text>
               </View>
               <View style={styles.row}>
                 <Text style={styles.singleFlex}>Total Items</Text>
                 <Text style={styles.totalItems}>x{items.length}</Text>
               </View>
             </View>
-
-            <Image source={icons.NEXT_FILLED} style={styles.nextButton} />
+          </View>
+          <Pressable
+            onPress={onNavigateToCheckout}
+            style={{
+              marginVertical: 12,
+              marginHorizontal: 6,
+              padding: 12,
+              borderRadius: 6,
+              backgroundColor: colors.DARK_BLUE,
+            }}>
+            <Text
+              style={{
+                fontFamily: fonts.BOLD,
+                color: 'white',
+                textAlign: 'center',
+              }}>
+              Proceed to Checkout
+            </Text>
           </Pressable>
         </View>
       )}
@@ -131,19 +140,19 @@ function ListContentDivider() {
 function CartItem({ item }) {
   const dispatch = useDispatch();
   const { title, image, unit, price, stock, quantity, subtotal } = item;
-  const [count, setCount] = useState(quantity);
+  // const [count, setCount] = useState(quantity);
 
   function onQuantityIncrease() {
-    setCount(prevState => prevState + 1);
-    dispatch(updateQuantity({ id: item.id, quantity: count + 1 }));
+    // setCount(prevState => prevState + 1);
+    dispatch(updateQuantity({ id: item.id, quantity: quantity + 1 }));
   }
 
   function onQuantityDecrease() {
-    if (count - 1 === 0) {
+    if (quantity - 1 === 0) {
       dispatch(removeFromCart(item.id));
     }
-    setCount(prevState => prevState - 1);
-    dispatch(updateQuantity({ id: item.id, quantity: count - 1 }));
+    // setCount(prevState => prevState - 1);
+    dispatch(updateQuantity({ id: item.id, quantity: quantity - 1 }));
   }
 
   function onRemoveItem() {
@@ -183,7 +192,7 @@ function CartItem({ item }) {
             <Text style={styles.countTextStyle}>{quantity}</Text>
           </View>
 
-          <Pressable disabled={count === stock} onPress={onQuantityIncrease}>
+          <Pressable disabled={quantity === stock} onPress={onQuantityIncrease}>
             <Image style={styles.minusCount} source={icons.ADD} />
           </Pressable>
         </View>
@@ -191,5 +200,3 @@ function CartItem({ item }) {
     </Pressable>
   );
 }
-
-export default CartScreen;

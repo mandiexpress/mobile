@@ -8,6 +8,7 @@ export default StyleSheet.create({
   image: {
     width: 75,
     height: 75,
+    resizeMode: 'contain',
     borderRadius: Platform.OS === 'android' ? 12 : 6,
   },
   title: {

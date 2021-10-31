@@ -38,12 +38,7 @@ function CategoryItem({ item, navigation }) {
 
   return (
     <Pressable onPress={() => onPress(item.id, item.english)}>
-      <Image
-        source={{ uri: item.image }}
-        resizeMethod={'auto'}
-        resizeMode={'contain'}
-        style={styles.image}
-      />
+      <Image source={{ uri: item.image }} style={styles.image} />
       <Text style={styles.title}>{item.english}</Text>
       <Text style={styles.discount}>{item.items} Items</Text>
     </Pressable>

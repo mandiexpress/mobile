@@ -41,11 +41,9 @@ export default function LoginScreen({ navigation }) {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <View style={styles.container}>
-        <Header navigation={navigation} title={'Login'} />
+    <View style={{ flex: 1 }}>
+      <Header navigation={navigation} title={'Login'} />
+      <KeyboardAvoidingView style={styles.container}>
         <View
           style={{
             flex: 1,
@@ -121,6 +119,8 @@ export default function LoginScreen({ navigation }) {
                       onBlur={handleBlur('phoneNumber')}
                       keyboardAppearance={'default'}
                       keyboardType={'number-pad'}
+                      returnKeyType={'done'}
+                      onSubmitEditing={handleSubmit}
                     />
                   </View>
                 </View>
@@ -171,7 +171,7 @@ export default function LoginScreen({ navigation }) {
             </>
           )}
         </Formik>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }

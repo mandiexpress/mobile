@@ -23,35 +23,33 @@ export default function ProductItem({
 }) {
   const dispatch = useDispatch();
   const isAvailable = cartItems.find(cartItem => cartItem.id === item.id);
-  const [count, setCount] = useState(1);
+  const quantity = getQuantity(cartItems, item.id);
 
   function onCartUpdate() {
-    const model = { ...item, quantity: count };
+    const model = { ...item, quantity: 1 };
     if (item.discount > 0) {
-      model.subtotal = calculateDiscount(item.discount, item.price) * count;
+      model.subtotal = calculateDiscount(item.discount, item.price) * 1;
     } else {
-      model.subtotal = item.price * count;
+      model.subtotal = item.price * 1;
     }
     dispatch(addToCart(model));
   }
 
   function onIncrement() {
-    setCount(prevCount => prevCount + 1);
     const model = {
       id: item.id,
-      quantity: count + 1,
+      quantity: quantity + 1,
     };
     dispatch(updateQuantity(model));
   }
 
   function onDecrement() {
-    if (count - 1 === 0) {
+    if (quantity - 1 === 0) {
       dispatch(removeFromCart(item.id));
     } else {
-      setCount(prevCount => prevCount - 1);
       const model = {
         id: item.id,
-        quantity: count - 1,
+        quantity: quantity - 1,
       };
       dispatch(updateQuantity(model));
     }
