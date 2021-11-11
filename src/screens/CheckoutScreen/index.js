@@ -1,7 +1,15 @@
 import firestore from '@react-native-firebase/firestore';
 import { Formik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Image, Pressable, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Image,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { DataTable, Modal } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -47,6 +55,28 @@ export default function CheckoutScreen({ navigation, route }) {
   const phoneNumberInput = useRef();
 
   const [loading, setLoading] = useState(false);
+  const [listAddress, setListAddress] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+
+  async function USERS_ALL_ADDRESS() {
+    let result = [];
+    let data = await firestore()
+      .collection('Users')
+      .doc(user.id)
+      .collection('addresses')
+      .get();
+    let temp;
+    for (var i of data._docs) {
+      temp = i.data();
+      temp['id'] = i.id;
+      result.push(temp);
+    }
+    setListAddress(result);
+  }
+
+  useEffect(() => {
+    USERS_ALL_ADDRESS();
+  }, []);
 
   async function onPlaceOrder({ name, phone, house }) {
     try {
@@ -54,7 +84,7 @@ export default function CheckoutScreen({ navigation, route }) {
         setAuthModal(true);
         return;
       }
-
+      console.log(name, phone, house, area);
       if (!area) {
         Alert.alert('Select an Area');
         return;
@@ -112,6 +142,7 @@ export default function CheckoutScreen({ navigation, route }) {
       setLoading(false);
     }
   }
+  console.log(area);
 
   return (
     <>
@@ -200,261 +231,423 @@ export default function CheckoutScreen({ navigation, route }) {
             }}
           />
 
-          <Formik
-            initialValues={{
-              name: user ? user.name : '',
-              phone: user ? user.contact.local : '',
-              house: user ? user.address.house : '',
-            }}
-            onSubmit={onPlaceOrder}
-            validationSchema={validation}>
-            {({
-              handleChange,
-              handleBlur,
-              values,
-              touched,
-              errors,
-              handleSubmit,
-            }) => (
-              <View style={{ flex: 1, marginVertical: 12 }}>
-                <Text style={{ fontSize: 21, fontWeight: 'bold' }}>
-                  Delivery Information
-                </Text>
-                <Text style={{ fontSize: 12, color: 'gray', marginBottom: 12 }}>
-                  Information regarding where to deliver your products
-                </Text>
-                <View style={styles.inputContainer}>
-                  <View
-                    style={[
-                      {
-                        flexDirection: 'row',
-                        borderBottomWidth: 1,
-                        backgroundColor: 'white',
-                        borderTopEndRadius: 4,
-                        borderTopStartRadius: 4,
-                      },
-                      touched.name && errors.name
-                        ? styles.errorUnderline
-                        : styles.normalUnderline,
-                    ]}>
-                    <Image
-                      style={{
-                        width: 18,
-                        height: 18,
-                        resizeMode: 'contain',
-                        alignSelf: 'center',
-                        marginStart: 8,
-                        tintColor: colors.DARK_BLUE,
-                      }}
-                      source={icons.PERSON}
-                    />
-                    <TextInput
-                      ref={fullNameInput}
-                      onChangeText={handleChange('name')}
-                      onBlur={handleBlur('name')}
-                      value={values.name}
-                      placeholder={'Full Name'}
-                      returnKeyType={'next'}
-                      placeholderTextColor={'gray'}
-                      style={[styles.textInputStyle]}
-                      onSubmitEditing={() => phoneNumberInput.current.focus()}
-                      spellCheck={false}
-                      autoCorrect={false}
-                      maxLength={40}
-                      keyboardType={'default'}
-                    />
-                  </View>
-                  <Text style={styles.errorText}>
-                    {touched.name && errors.name ? errors.name : ''}
-                  </Text>
-
-                  <View
-                    style={[
-                      {
-                        flexDirection: 'row',
-                        borderBottomWidth: 1,
-                        backgroundColor: 'white',
-                        borderTopEndRadius: 4,
-                        borderTopStartRadius: 4,
-                      },
-                      touched.name && errors.name
-                        ? styles.errorUnderline
-                        : styles.normalUnderline,
-                    ]}>
-                    <Image
-                      style={{
-                        width: 18,
-                        height: 18,
-                        resizeMode: 'contain',
-                        alignSelf: 'center',
-                        marginStart: 8,
-                        tintColor: colors.DARK_BLUE,
-                      }}
-                      source={icons.PHONE}
-                    />
-                    <TextInput
-                      ref={phoneNumberInput}
-                      onChangeText={handleChange('phone')}
-                      onBlur={handleBlur('phone')}
-                      value={values.phone}
-                      placeholder={'Phone number'}
-                      placeholderTextColor={'gray'}
-                      style={[
-                        styles.textInputStyle,
-                        touched.phone && errors.phone
-                          ? styles.errorUnderline
-                          : styles.normalUnderline,
-                      ]}
-                      spellCheck={false}
-                      autoCorrect={false}
-                      maxLength={40}
-                      keyboardType={'number-pad'}
-                    />
-                  </View>
-                  <Text style={styles.errorText}>
-                    {touched.phone && errors.phone ? errors.phone : ''}
-                  </Text>
-
-                  <Text
+          {user ? (
+            <View style={{ flex: 1, marginVertical: 12 }}>
+              <Text style={{ fontSize: 21, fontWeight: 'bold' }}>
+                Delivery Information
+              </Text>
+              <Text style={{ fontSize: 12, color: 'gray', marginBottom: 12 }}>
+                Information regarding where to deliver your products
+              </Text>
+              <View style={styles.inputContainer}>
+                <View
+                  style={[
+                    {
+                      flexDirection: 'row',
+                      borderBottomWidth: 1,
+                      backgroundColor: 'white',
+                      borderTopEndRadius: 4,
+                      borderTopStartRadius: 4,
+                      marginVertical: 14,
+                    },
+                    styles.normalUnderline,
+                  ]}>
+                  <Image
                     style={{
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                      marginBottom: 12,
-                    }}>
-                    Address Information
-                  </Text>
-
-                  {/* Area Selection */}
-                  <DropDown
-                    open={areasOpen}
-                    value={area}
-                    items={areas}
-                    setOpen={setAreasOpen}
-                    setValue={setArea}
-                    setItems={setAreas}
-                    placeholder={'Select Area'}
-                    zIndex={3}
-                    searchPlaceholder={'Search Areas...'}
-                    textStyle={styles.dropdownEnabledTextStyle}
-                    onChangeValue={value => {
-                      if (
-                        value === 'model-town' ||
-                        value === 'valencia' ||
-                        value === 'iqbal-town'
-                      ) {
-                        console.log('Only load blocks');
-                        setBlocks(getBlocks(value, null));
-                      } else {
-                        setSectors(getSectors(value));
-                      }
+                      width: 18,
+                      height: 18,
+                      resizeMode: 'contain',
+                      alignSelf: 'center',
+                      marginStart: 8,
+                      tintColor: colors.DARK_BLUE,
                     }}
+                    source={icons.PERSON}
                   />
+                  <TextInput
+                    ref={fullNameInput}
+                    // onChangeText={handleChange('name')}
+                    // onBlur={handleBlur('name')}
+                    value={user.name}
+                    editable={false}
+                    placeholder={'Full Name'}
+                    returnKeyType={'next'}
+                    placeholderTextColor={'gray'}
+                    style={[styles.textInputStyle]}
+                    onSubmitEditing={() => phoneNumberInput.current.focus()}
+                    spellCheck={false}
+                    autoCorrect={false}
+                    maxLength={40}
+                    keyboardType={'default'}
+                  />
+                </View>
 
-                  {/* Sector Selection */}
-                  {sectors && sectors.length > 0 && (
-                    <>
-                      <View style={styles.divider} />
-                      <DropDown
-                        open={sectorsOpen}
-                        value={sector}
-                        items={sectors}
-                        disabled={sectors && sectors.length === 0}
-                        setOpen={setSectorsOpen}
-                        setValue={setSector}
-                        setItems={setSectors}
-                        placeholder={'Select Sector'}
-                        zIndex={2}
-                        searchPlaceholder={'Search Areas...'}
-                        textStyle={
-                          sectors && sectors.length === 0
-                            ? styles.dropdownDisabledTextStyle
-                            : styles.dropdownEnabledTextStyle
-                        }
-                        onChangeValue={value =>
-                          setBlocks(getBlocks(area, value))
-                        }
-                      />
-                    </>
-                  )}
+                <View
+                  style={[
+                    {
+                      flexDirection: 'row',
+                      borderBottomWidth: 1,
+                      backgroundColor: 'white',
+                      borderTopEndRadius: 4,
+                      borderTopStartRadius: 4,
+                      marginBottom: 14,
+                    },
+                    styles.normalUnderline,
+                  ]}>
+                  <Image
+                    style={{
+                      width: 18,
+                      height: 18,
+                      resizeMode: 'contain',
+                      alignSelf: 'center',
+                      marginStart: 8,
+                      tintColor: colors.DARK_BLUE,
+                    }}
+                    source={icons.PHONE}
+                  />
+                  <TextInput
+                    ref={phoneNumberInput}
+                    // onChangeText={handleChange('phone')}
+                    // onBlur={handleBlur('phone')}
+                    value={user.contact.local}
+                    editable={false}
+                    placeholder={'Phone number'}
+                    placeholderTextColor={'gray'}
+                    style={[styles.textInputStyle, styles.normalUnderline]}
+                    spellCheck={false}
+                    autoCorrect={false}
+                    maxLength={40}
+                    keyboardType={'number-pad'}
+                  />
+                </View>
 
-                  {/* Block Selection */}
-                  {blocks && (
-                    <>
-                      <View style={styles.divider} />
-                      <DropDown
-                        open={blocksOpen}
-                        value={block}
-                        items={blocks}
-                        disabled={blocks && blocks.length === 0}
-                        setOpen={setBlocksOpen}
-                        setValue={setBlock}
-                        setItems={setBlocks}
-                        placeholder={'Select Block'}
-                        zIndex={1}
-                        textStyle={
-                          blocks && blocks.length === 0
-                            ? styles.dropdownDisabledTextStyle
-                            : styles.dropdownEnabledTextStyle
-                        }
-                        searchPlaceholder={'Search Areas...'}
-                      />
-                    </>
-                  )}
-
-                  <View style={styles.bottomDivider} />
-
-                  <View
-                    style={[
-                      {
-                        flexDirection: 'row',
-                        borderBottomWidth: 1,
-                        backgroundColor: 'white',
-                        borderTopEndRadius: 4,
-                        borderTopStartRadius: 4,
-                      },
-                      touched.name && errors.name
-                        ? styles.errorUnderline
-                        : styles.normalUnderline,
-                    ]}>
-                    <Image
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    marginBottom: 12,
+                  }}>
+                  Address Information
+                </Text>
+                <FlatList
+                  data={listAddress}
+                  keyExtractor={item => item.id}
+                  nestedScrollEnabled
+                  renderItem={({ item }) => (
+                    <View
                       style={{
-                        width: 18,
-                        height: 18,
-                        resizeMode: 'contain',
-                        alignSelf: 'center',
-                        marginStart: 8,
-                        tintColor: colors.DARK_BLUE,
-                      }}
-                      source={icons.HOME_NUMBER}
-                    />
-                    <TextInput
-                      onChangeText={handleChange('house')}
-                      onBlur={handleBlur('house')}
-                      value={values.house}
-                      placeholder={'House Number'}
-                      placeholderTextColor={'gray'}
+                        marginVertical: 14,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}>
+                      <Text
+                        style={{
+                          width: selectedAddress
+                            ? selectedAddress.id === item.id
+                              ? '100%'
+                              : '60%'
+                            : '60%',
+                        }}>
+                        {item.complete}
+                      </Text>
+                      {selectedAddress ? (
+                        selectedAddress.id === item.id ? null : (
+                          <Pressable
+                            style={[styles.button, { flexGrow: 1 }]}
+                            onPress={() => {
+                              setSelectedAddress(item);
+                            }}>
+                            <Text style={styles.buttonText}>SELECT</Text>
+                          </Pressable>
+                        )
+                      ) : (
+                        <Pressable
+                          style={[styles.button, { flexGrow: 1 }]}
+                          onPress={() => {
+                            setSelectedAddress(item);
+                          }}>
+                          <Text style={styles.buttonText}>SELECT</Text>
+                        </Pressable>
+                      )}
+                    </View>
+                  )}
+                />
+              </View>
+              <Pressable
+                onPress={() => {
+                  let data = {
+                    name: user.name,
+                    phone: user.contact.local,
+                    house: selectedAddress.house,
+                  };
+                  console.log(selectedAddress.area);
+                  setArea(selectedAddress.area);
+                  setBlock(selectedAddress.block);
+                  setSector(selectedAddress.sector);
+                  onPlaceOrder(data);
+                }}
+                style={styles.button}>
+                <Text style={styles.buttonText}>Place Order</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <Formik
+              initialValues={{
+                name: '',
+                phone: '',
+                house: '',
+              }}
+              onSubmit={onPlaceOrder}
+              validationSchema={validation}>
+              {({
+                handleChange,
+                handleBlur,
+                values,
+                touched,
+                errors,
+                handleSubmit,
+              }) => (
+                <View style={{ flex: 1, marginVertical: 12 }}>
+                  <Text style={{ fontSize: 21, fontWeight: 'bold' }}>
+                    Delivery Information
+                  </Text>
+                  <Text
+                    style={{ fontSize: 12, color: 'gray', marginBottom: 12 }}>
+                    Information regarding where to deliver your products
+                  </Text>
+                  <View style={styles.inputContainer}>
+                    <View
                       style={[
-                        styles.textInputStyle,
-                        touched.house && errors.house
+                        {
+                          flexDirection: 'row',
+                          borderBottomWidth: 1,
+                          backgroundColor: 'white',
+                          borderTopEndRadius: 4,
+                          borderTopStartRadius: 4,
+                        },
+                        touched.name && errors.name
                           ? styles.errorUnderline
                           : styles.normalUnderline,
-                      ]}
-                      spellCheck={false}
-                      autoCorrect={false}
-                      maxLength={40}
-                      keyboardType={'default'}
+                      ]}>
+                      <Image
+                        style={{
+                          width: 18,
+                          height: 18,
+                          resizeMode: 'contain',
+                          alignSelf: 'center',
+                          marginStart: 8,
+                          tintColor: colors.DARK_BLUE,
+                        }}
+                        source={icons.PERSON}
+                      />
+                      <TextInput
+                        ref={fullNameInput}
+                        onChangeText={handleChange('name')}
+                        onBlur={handleBlur('name')}
+                        value={values.name}
+                        placeholder={'Full Name'}
+                        returnKeyType={'next'}
+                        placeholderTextColor={'gray'}
+                        style={[styles.textInputStyle]}
+                        onSubmitEditing={() => phoneNumberInput.current.focus()}
+                        spellCheck={false}
+                        autoCorrect={false}
+                        maxLength={40}
+                        keyboardType={'default'}
+                      />
+                    </View>
+                    <Text style={styles.errorText}>
+                      {touched.name && errors.name ? errors.name : ''}
+                    </Text>
+
+                    <View
+                      style={[
+                        {
+                          flexDirection: 'row',
+                          borderBottomWidth: 1,
+                          backgroundColor: 'white',
+                          borderTopEndRadius: 4,
+                          borderTopStartRadius: 4,
+                        },
+                        touched.name && errors.name
+                          ? styles.errorUnderline
+                          : styles.normalUnderline,
+                      ]}>
+                      <Image
+                        style={{
+                          width: 18,
+                          height: 18,
+                          resizeMode: 'contain',
+                          alignSelf: 'center',
+                          marginStart: 8,
+                          tintColor: colors.DARK_BLUE,
+                        }}
+                        source={icons.PHONE}
+                      />
+                      <TextInput
+                        ref={phoneNumberInput}
+                        onChangeText={handleChange('phone')}
+                        onBlur={handleBlur('phone')}
+                        value={values.phone}
+                        placeholder={'Phone number'}
+                        placeholderTextColor={'gray'}
+                        style={[
+                          styles.textInputStyle,
+                          touched.phone && errors.phone
+                            ? styles.errorUnderline
+                            : styles.normalUnderline,
+                        ]}
+                        spellCheck={false}
+                        autoCorrect={false}
+                        maxLength={40}
+                        keyboardType={'number-pad'}
+                      />
+                    </View>
+                    <Text style={styles.errorText}>
+                      {touched.phone && errors.phone ? errors.phone : ''}
+                    </Text>
+
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        marginBottom: 12,
+                      }}>
+                      Address Information
+                    </Text>
+
+                    {/* Area Selection */}
+                    <DropDown
+                      open={areasOpen}
+                      value={area}
+                      items={areas}
+                      setOpen={setAreasOpen}
+                      setValue={setArea}
+                      setItems={setAreas}
+                      placeholder={'Select Area'}
+                      zIndex={3}
+                      searchPlaceholder={'Search Areas...'}
+                      textStyle={styles.dropdownEnabledTextStyle}
+                      onChangeValue={value => {
+                        if (
+                          value === 'model-town' ||
+                          value === 'valencia' ||
+                          value === 'iqbal-town'
+                        ) {
+                          console.log('Only load blocks');
+                          setBlocks(getBlocks(value, null));
+                        } else {
+                          setSectors(getSectors(value));
+                        }
+                      }}
                     />
+
+                    {/* Sector Selection */}
+                    {sectors && sectors.length > 0 && (
+                      <>
+                        <View style={styles.divider} />
+                        <DropDown
+                          open={sectorsOpen}
+                          value={sector}
+                          items={sectors}
+                          disabled={sectors && sectors.length === 0}
+                          setOpen={setSectorsOpen}
+                          setValue={setSector}
+                          setItems={setSectors}
+                          placeholder={'Select Sector'}
+                          zIndex={2}
+                          searchPlaceholder={'Search Areas...'}
+                          textStyle={
+                            sectors && sectors.length === 0
+                              ? styles.dropdownDisabledTextStyle
+                              : styles.dropdownEnabledTextStyle
+                          }
+                          onChangeValue={value =>
+                            setBlocks(getBlocks(area, value))
+                          }
+                        />
+                      </>
+                    )}
+
+                    {/* Block Selection */}
+                    {blocks && (
+                      <>
+                        <View style={styles.divider} />
+                        <DropDown
+                          open={blocksOpen}
+                          value={block}
+                          items={blocks}
+                          disabled={blocks && blocks.length === 0}
+                          setOpen={setBlocksOpen}
+                          setValue={setBlock}
+                          setItems={setBlocks}
+                          placeholder={'Select Block'}
+                          zIndex={1}
+                          textStyle={
+                            blocks && blocks.length === 0
+                              ? styles.dropdownDisabledTextStyle
+                              : styles.dropdownEnabledTextStyle
+                          }
+                          searchPlaceholder={'Search Areas...'}
+                        />
+                      </>
+                    )}
+
+                    <View style={styles.bottomDivider} />
+
+                    <View
+                      style={[
+                        {
+                          flexDirection: 'row',
+                          borderBottomWidth: 1,
+                          backgroundColor: 'white',
+                          borderTopEndRadius: 4,
+                          borderTopStartRadius: 4,
+                        },
+                        touched.name && errors.name
+                          ? styles.errorUnderline
+                          : styles.normalUnderline,
+                      ]}>
+                      <Image
+                        style={{
+                          width: 18,
+                          height: 18,
+                          resizeMode: 'contain',
+                          alignSelf: 'center',
+                          marginStart: 8,
+                          tintColor: colors.DARK_BLUE,
+                        }}
+                        source={icons.HOME_NUMBER}
+                      />
+                      <TextInput
+                        onChangeText={handleChange('house')}
+                        onBlur={handleBlur('house')}
+                        value={values.house}
+                        placeholder={'House Number'}
+                        placeholderTextColor={'gray'}
+                        style={[
+                          styles.textInputStyle,
+                          touched.house && errors.house
+                            ? styles.errorUnderline
+                            : styles.normalUnderline,
+                        ]}
+                        spellCheck={false}
+                        autoCorrect={false}
+                        maxLength={40}
+                        keyboardType={'default'}
+                      />
+                    </View>
+                    <Text style={styles.errorText}>
+                      {touched.house && errors.house ? errors.house : ''}
+                    </Text>
                   </View>
-                  <Text style={styles.errorText}>
-                    {touched.house && errors.house ? errors.house : ''}
-                  </Text>
+                  <Pressable onPress={handleSubmit} style={styles.button}>
+                    <Text style={styles.buttonText}>Place Order</Text>
+                  </Pressable>
                 </View>
-                <Pressable onPress={handleSubmit} style={styles.button}>
-                  <Text style={styles.buttonText}>Place Order</Text>
-                </Pressable>
-              </View>
-            )}
-          </Formik>
+              )}
+            </Formik>
+          )}
         </View>
         {loading && <Loader visible={loading} text={'Placing your order...'} />}
       </KeyboardAwareScrollView>

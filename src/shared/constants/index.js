@@ -72,6 +72,7 @@ export const routes = {
   LOGIN_VERIFY_SCREEN: 'LoginVerifyScreen',
   ITEM_DETAIL_SCREEN: 'ItemDetailScreen',
   LIST_ADDRESS_SCREEN: 'ListAddressScreen',
+  ADD_ADDRESS: 'AddAddress',
   FAVORITE_LIST: 'FavoriteScreen',
 
   HOME_NAVIGATOR: 'HOME',

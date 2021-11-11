@@ -9,6 +9,7 @@ export default class User {
     totalOrders = 0,
     id = null,
     image = null,
+    defaultAddress,
   }) {
     this.name = name;
     this.contact = contact;
@@ -16,10 +17,13 @@ export default class User {
     this.totalOrders = totalOrders;
     this.id = id;
     this.image = image;
+    this.defaultAddress = defaultAddress;
   }
 
   async saveInDB(user) {
     try {
+      let defaultAddress = user.defaultAddress;
+      delete user.defaultAddress;
       const userDocument = paths.USERS.doc(user.id);
       const orderCollection = paths.ORDERS.where(
         'phone',
@@ -40,7 +44,7 @@ export default class User {
           });
         }
       }
-
+      await userDocument.collection('addresses').doc().set(defaultAddress);
       return await this.fetchUser(user.id);
     } catch (err) {
       throw err;

@@ -2,6 +2,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import AddressManagementScreen from '../../screens/AddressManagementScreen';
+import AddAddressScreen from '../../screens/AddAddressScreen';
 import CartScreen from '../../screens/CartScreen';
 import CheckoutScreen from '../../screens/CheckoutScreen';
 import FavoriteListScreen from '../../screens/FavoriteListScreen';
@@ -56,6 +57,7 @@ export default function MainNavigator() {
         name={routes.LIST_ADDRESS_SCREEN}
         component={AddressManagementScreen}
       />
+      <Stack.Screen name={routes.ADD_ADDRESS} component={AddAddressScreen} />
       <Stack.Screen
         name={routes.FAVORITE_LIST}
         component={FavoriteListScreen}

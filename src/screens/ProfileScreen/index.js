@@ -182,7 +182,7 @@ export default function ProfileScreen({ navigation }) {
                 color: 'black',
                 fontFamily: fonts.REGULAR,
               }}>
-              {user.address.complete}
+              {user.address}
             </Text>
           </View>
         </View>

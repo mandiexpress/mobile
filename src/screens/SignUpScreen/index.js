@@ -82,7 +82,7 @@ export default function SignUpScreen({ navigation }) {
     }
   }
 
-  async function onSignUp({ name, phone, house }, actions) {
+  async function onSignUp({ name, phone, house, type }, actions) {
     try {
       if (!area) {
         Alert.alert('Select an Area');
@@ -119,13 +119,15 @@ export default function SignUpScreen({ navigation }) {
           country: 'PK',
           code: '+92',
         },
-        address: {
+        address,
+        defaultAddress: {
           area,
           sector,
           block,
           house,
           complete: address,
-          type: 'default',
+          type,
+          isDefault: true,
         },
       };
       const user = new User(model);
@@ -303,6 +305,29 @@ export default function SignUpScreen({ navigation }) {
               </View>
               <Text style={styles.errorText}>
                 {touched.house && errors.house ? errors.house : ''}
+              </Text>
+
+              <View style={styles.inputContentContainer}>
+                <Image
+                  source={icons.HOME_NUMBER}
+                  style={styles.inputIconStyle}
+                />
+                <TextInput
+                  disabled={true}
+                  onChangeText={handleChange('type')}
+                  onBlur={handleBlur('type')}
+                  value={values.type}
+                  placeholder={'type'}
+                  placeholderTextColor={'gray'}
+                  style={styles.inputStyle}
+                  spellCheck={false}
+                  autoCorrect={false}
+                  maxLength={40}
+                  keyboardType={'default'}
+                />
+              </View>
+              <Text style={styles.errorText}>
+                {touched.type && errors.type ? errors.type : ''}
               </Text>
 
               <Pressable style={styles.button} onPress={handleSubmit}>
